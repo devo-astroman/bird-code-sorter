@@ -3,6 +3,7 @@ import { ROOM_PHASE } from "shared/constants.module";
 import { Prematch } from "shared/prematch/prematch.module";
 import { Stores } from "shared/stores/stores.module";
 import { RoomGom } from "./room-gom.module";
+import { Match } from "shared/match/match.module";
 
 export class Room {
 	private stores: Stores;
@@ -12,6 +13,7 @@ export class Room {
 	private players$: Observer<Model[]>;
 
 	private preMatch!: Prematch;
+	private match!: Match;
 	constructor(instance: Instance) {
 		print(" - Room -");
 		this.stores = new Stores();
@@ -30,6 +32,10 @@ export class Room {
 				this.stores.setRoomStoreState(ROOM_PHASE.MATCH);
 			});
 		}
+		const matchFolder = this.roomGom.getMatchFolder();
+		if (matchFolder) {
+			this.match = new Match(matchFolder);
+		}
 	}
 
 	init() {
@@ -42,6 +48,7 @@ export class Room {
 					print("match");
 					print("players in the match ", this.stores.getPlayerStoreState());
 					//match.init
+					this.match.init();
 				} else if (phase === ROOM_PHASE.WIN) {
 					print("win");
 				} else if (phase === ROOM_PHASE.LOOSE) {

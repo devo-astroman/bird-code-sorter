@@ -12,4 +12,5 @@ export enum ROOM_PHASE {
 }
 
 export const PREMATCH_TIME = 5; //15
+export const MATCH_TIME = 60; //60
 export const PLAYER_JUMP_HEIGHT = 7.2;

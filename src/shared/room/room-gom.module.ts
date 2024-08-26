@@ -12,5 +12,13 @@ export class RoomGom {
 		return prematchFolder;
 	}
 
+	getMatchFolder() {
+		const matchFolder = this.root.FindFirstChild("Match", true);
+		if (!matchFolder) {
+			print("Warning, not found ", matchFolder);
+		}
+		return matchFolder;
+	}
+
 	Destroy() {}
 }
