@@ -9,18 +9,26 @@ export class Room {
 	private roomGom: RoomGom;
 
 	private room$: Observer<ROOM_PHASE>;
+	private players$: Observer<Model[]>;
 
 	private preMatch!: Prematch;
 	constructor(instance: Instance) {
 		print(" - Room -");
 		this.stores = new Stores();
 		this.roomGom = new RoomGom(instance);
-
 		this.room$ = this.stores.getRoomStoreState$();
+		this.players$ = this.stores.getPlayerStoreState$();
+
+		this.players$.connect((data) => {
+			print("PLAAAYERS:  ", data);
+		});
 
 		const prematchFolder = this.roomGom.getPrematchFolder();
 		if (prematchFolder) {
-			this.preMatch = new Prematch(prematchFolder);
+			this.preMatch = new Prematch(prematchFolder, (players) => {
+				this.stores.setPlayersStoreState(players);
+				this.stores.setRoomStoreState(ROOM_PHASE.MATCH);
+			});
 		}
 	}
 
@@ -32,6 +40,8 @@ export class Room {
 					//preMatch.finished(()=>this.stores.setRoomStoreState(ROOM_PHASE.MATCH))
 				} else if (phase === ROOM_PHASE.MATCH) {
 					print("match");
+					print("players in the match ", this.stores.getPlayerStoreState());
+					//match.init
 				} else if (phase === ROOM_PHASE.WIN) {
 					print("win");
 				} else if (phase === ROOM_PHASE.LOOSE) {

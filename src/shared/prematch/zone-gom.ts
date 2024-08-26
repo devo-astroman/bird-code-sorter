@@ -1,7 +1,7 @@
 import { PLAYER_JUMP_HEIGHT } from "shared/constants.module";
 import { isPlayerUpperTorso } from "shared/services/player-game-service.module";
 
-export class PrematchZoneGom {
+export class ZoneGom {
 	private part: Part;
 	private connectionEnter!: RBXScriptConnection;
 	private connectionExit!: RBXScriptConnection;

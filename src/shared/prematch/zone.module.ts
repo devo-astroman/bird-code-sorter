@@ -1,8 +1,8 @@
-import { PrematchZoneGom } from "./prematch-zone-gom";
+import { ZoneGom } from "./zone-gom";
 
-export class PrematchZone {
+export class Zone {
 	private zonePart: Part;
-	private gom: PrematchZoneGom;
+	private gom: ZoneGom;
 	private playersInside: Model[] = [];
 	private onFirstPlayerEnterFn: () => void;
 	private onLastPlayerExitFn: () => void;
@@ -11,7 +11,7 @@ export class PrematchZone {
 		this.onFirstPlayerEnterFn = onFirstPlayerEnterFn;
 		this.onLastPlayerExitFn = onLastPlayerExitFn;
 		this.zonePart = zonePart;
-		this.gom = new PrematchZoneGom(zonePart);
+		this.gom = new ZoneGom(zonePart);
 	}
 	init() {
 		this.gom.triggerOnPlayerEnter((playerCharacter) => {
@@ -41,6 +41,10 @@ export class PrematchZone {
 				}
 			}
 		});
+	}
+
+	getPlayersInZone() {
+		return this.playersInside;
 	}
 
 	end() {

@@ -1,28 +1,42 @@
-import { MutableLiveData } from "@rbxts/observer";
+import { MutableLiveData, Observer } from "@rbxts/observer";
 
 export class PlayerStore {
-	private playerNames: string[] = [];
-	private store = new MutableLiveData<string[]>();
+	private playerCharacters$ = new Observer<Model[]>();
+	private state = new MutableLiveData<Model[]>();
 	constructor() {
 		print("player store");
 	}
 
-	addPlayer(name: string) {
-		const alreadyExist = this.playerNames.some((p) => {
-			return p === name;
+	addPlayer(player: Model) {
+		const data = this.state.getValue() as Model[];
+		const alreadyExist = data.some((p) => {
+			return p === player;
 		});
 
 		if (!alreadyExist) {
-			this.store.setValue([...this.playerNames, name]);
+			this.state.setValue([...data, player]);
 		}
 	}
 
-	removePlayer(name: string) {
-		const alreadyExist = this.playerNames.some((p) => {
-			return p === name;
+	removePlayer(player: Model) {
+		const data = this.state.getValue() as Model[];
+		const alreadyExist = data.some((p) => {
+			return p === player;
 		});
 		if (alreadyExist) {
-			this.store.setValue([...this.playerNames.filter((p) => p !== name)]);
+			this.state.setValue([...data.filter((p) => p !== player)]);
 		}
+	}
+
+	setPlayers(players: Model[]) {
+		this.state.setValue(players);
+	}
+
+	getObserver() {
+		return this.playerCharacters$;
+	}
+
+	getValue() {
+		return this.state.getValue();
 	}
 }
