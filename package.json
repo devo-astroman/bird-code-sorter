@@ -24,6 +24,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@rbxts/binder": "^6.0.0-ts.3"
+    "@rbxts/binder": "^6.0.0-ts.3",
+    "@rbxts/observer": "^0.1.4"
   }
 }
