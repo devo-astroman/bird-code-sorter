@@ -10,3 +10,6 @@ export enum ROOM_PHASE {
 	WIN = 2,
 	LOOSE = 3,
 }
+
+export const PREMATCH_TIME = 5; //15
+export const PLAYER_JUMP_HEIGHT = 7.2;

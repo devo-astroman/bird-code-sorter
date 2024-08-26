@@ -22,6 +22,25 @@ export class PrematchGom {
 		door1.Transparency = 0;
 	}
 
+	displaySecs(sec: number) {
+		const secsTextLabel = this.root.FindFirstChild("SecsTextLabel", true) as TextLabel;
+		secsTextLabel.Text = sec + "";
+	}
+
+	hideTimer() {
+		const billboardGui = this.root.FindFirstChild("BillboardGui", true) as BillboardGui;
+		billboardGui.Enabled = false;
+		const billboardToStartGui = this.root.FindFirstChild("BillboardToStartGui", true) as BillboardGui;
+		billboardToStartGui.Enabled = false;
+	}
+
+	showTimer() {
+		const billboardGui = this.root.FindFirstChild("BillboardGui", true) as BillboardGui;
+		billboardGui.Enabled = true;
+		const billboardToStartGui = this.root.FindFirstChild("BillboardToStartGui", true) as BillboardGui;
+		billboardToStartGui.Enabled = true;
+	}
+
 	Destroy() {
 		//
 	}
