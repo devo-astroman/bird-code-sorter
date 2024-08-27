@@ -25,6 +25,13 @@ export enum SLOT_VALUE {
 }
 
 export const SLOT_VALUE_STRINGS = ["EMPTY", "RED", "GREEN", "BLUE", "PURPLE"];
+export const SLOT_VALUE_COLORS = [
+	new Color3(0, 0, 0), //EMPTY - BLACK
+	new Color3(1, 0, 0), //RED
+	new Color3(0, 1, 0), //GREEN
+	new Color3(0, 0, 1), //BLUE
+	new Color3(0.502, 0, 0.502), //PURPLE
+];
 
 export const PREMATCH_TIME = 5; //15
 export const MATCH_TIME = 60; //60

@@ -13,6 +13,7 @@ export class Slot extends MyMaid {
 		this.id = id;
 		this.value = value;
 		this.gom = new SlotGom(instance as Folder);
+		this.gom.updateDisplay(this.value);
 		this.interactedEvent = this.gom.getInteractEvent();
 		this.gom.onTriggerEvent((player) => {
 			this.interactedEvent.Fire(player, id, this.value);
@@ -24,6 +25,7 @@ export class Slot extends MyMaid {
 
 	setValue(value: SLOT_VALUE) {
 		this.value = value;
+		this.gom.updateDisplay(this.value);
 	}
 
 	getInteracted() {

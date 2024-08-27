@@ -54,6 +54,7 @@ export class SlotLine extends MyMaid {
 			print("warning no found slotData with id ", id);
 		} else {
 			slotData.value = newValue;
+			slotData.slot.setValue(newValue);
 		}
 	}
 

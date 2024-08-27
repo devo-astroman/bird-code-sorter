@@ -1,4 +1,6 @@
+import { SLOT_VALUE } from "shared/constants.module";
 import { MyMaid } from "shared/maid/my-maid.module";
+import { fromSlotValueToColor3 } from "shared/services/slot-service.module";
 
 export class SlotGom extends MyMaid {
 	private root: Folder;
@@ -25,6 +27,34 @@ export class SlotGom extends MyMaid {
 		}
 
 		this.connection = proximityPrompt.Triggered.Connect(cb);
+	}
+
+	updateDisplay(value: SLOT_VALUE) {
+		const birdModel = this.root.FindFirstChild("BirdStatue") as Model;
+		if (!birdModel) {
+			print("Warning not found ", birdModel);
+		}
+
+		const base = birdModel.FindFirstChild("Base") as MeshPart;
+		const body = birdModel.FindFirstChild("Bird") as MeshPart;
+		const paws = birdModel.FindFirstChild("Paws") as MeshPart;
+
+		if (!base || !body || !paws) {
+			print("Warning not found base, body or paws", base, body, paws);
+		}
+
+		if (value === SLOT_VALUE.EMPTY) {
+			paws.Transparency = 1;
+			base.Transparency = 1;
+			body.Transparency = 1;
+		} else {
+			base.Transparency = 0;
+			base.Color = fromSlotValueToColor3(value);
+			body.Transparency = 0;
+			body.Color = fromSlotValueToColor3(value);
+			paws.Transparency = 0;
+			paws.Color = fromSlotValueToColor3(value);
+		}
 	}
 
 	prepareMaid(): void {
