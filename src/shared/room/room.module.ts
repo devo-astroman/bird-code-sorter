@@ -7,32 +7,37 @@ import { Match } from "shared/match/match.module";
 
 export class Room {
 	private stores: Stores;
-	private roomGom: RoomGom;
+	private gom: RoomGom;
 
 	private room$: Observer<ROOM_PHASE>;
 	private players$: Observer<Model[]>;
 
 	private preMatch!: Prematch;
 	private match!: Match;
+
+	private phaseFinishedEvent: BindableEvent;
 	constructor(instance: Instance) {
 		print(" - Room -");
 		this.stores = new Stores();
-		this.roomGom = new RoomGom(instance);
+		this.gom = new RoomGom(instance);
 		this.room$ = this.stores.getRoomStoreState$();
 		this.players$ = this.stores.getPlayerStoreState$();
+		this.phaseFinishedEvent = this.gom.getPhaseFinishedEvent();
+
+		this.gom.onPhaseFinished((players) => {
+			this.stores.setPlayersStoreState(players);
+			this.stores.setRoomStoreState(ROOM_PHASE.MATCH);
+		});
 
 		this.players$.connect((data) => {
 			print("PLAAAYERS:  ", data);
 		});
 
-		const prematchFolder = this.roomGom.getPrematchFolder();
+		const prematchFolder = this.gom.getPrematchFolder();
 		if (prematchFolder) {
-			this.preMatch = new Prematch(prematchFolder, (players) => {
-				this.stores.setPlayersStoreState(players);
-				this.stores.setRoomStoreState(ROOM_PHASE.MATCH);
-			});
+			this.preMatch = new Prematch(prematchFolder, this.phaseFinishedEvent);
 		}
-		const matchFolder = this.roomGom.getMatchFolder();
+		const matchFolder = this.gom.getMatchFolder();
 		if (matchFolder) {
 			this.match = new Match(matchFolder);
 		}

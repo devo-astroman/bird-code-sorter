@@ -1,5 +1,6 @@
 export class RoomGom {
 	private root: Instance;
+	private connection: RBXScriptConnection;
 	constructor(root: Instance) {
 		this.root = root;
 	}
@@ -20,5 +21,20 @@ export class RoomGom {
 		return matchFolder;
 	}
 
-	Destroy() {}
+	getPhaseFinishedEvent() {
+		const event = this.root.FindFirstChild("PhaseFinishedEvent");
+		if (!event) {
+			print("Warning, not found ", event);
+		}
+		return event as BindableEvent;
+	}
+
+	onPhaseFinished(cb: (players: Model[]) => void) {
+		const event = this.getPhaseFinishedEvent() as BindableEvent;
+		this.connection = event.Event.Connect(cb);
+	}
+
+	Destroy() {
+		if (this.connection) this.connection.Disconnect();
+	}
 }
