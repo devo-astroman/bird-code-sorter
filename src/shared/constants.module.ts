@@ -11,6 +11,11 @@ export enum ROOM_PHASE {
 	LOOSE = 3,
 }
 
+export enum MATCH_FINISH {
+	WIN = 0,
+	LOOSE = 1,
+}
+
 export const PREMATCH_TIME = 5; //15
 export const MATCH_TIME = 60; //60
 export const PLAYER_JUMP_HEIGHT = 7.2;

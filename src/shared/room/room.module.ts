@@ -1,5 +1,5 @@
 import { Observer } from "@rbxts/observer";
-import { ROOM_PHASE } from "shared/constants.module";
+import { MATCH_FINISH, ROOM_PHASE } from "shared/constants.module";
 import { Prematch } from "shared/prematch/prematch.module";
 import { Stores } from "shared/stores/stores.module";
 import { RoomGom } from "./room-gom.module";
@@ -26,10 +26,18 @@ export class Room extends MyMaid {
 		this.players$ = this.stores.getPlayerStoreState$();
 		this.phaseFinishedEvent = this.gom.getPhaseFinishedEvent();
 
-		this.gom.onPhaseFinished((id: ROOM_PHASE, players: Model[]) => {
+		this.gom.onPhaseFinished((id: ROOM_PHASE, data: Model[] | MATCH_FINISH) => {
 			if (id === ROOM_PHASE.PREMATCH) {
-				this.stores.setPlayersStoreState(players);
+				this.stores.setPlayersStoreState(data as Model[]);
 				this.stores.setRoomStoreState(ROOM_PHASE.MATCH);
+			} else if (id === ROOM_PHASE.MATCH) {
+				if (data === MATCH_FINISH.WIN) {
+					print("WIN!!!");
+				} else {
+					print("LOOSE!!!");
+				}
+			} else {
+				print("warning there is no phase with id ", id);
 			}
 		});
 
@@ -43,7 +51,7 @@ export class Room extends MyMaid {
 		}
 		const matchFolder = this.gom.getMatchFolder();
 		if (matchFolder) {
-			this.match = new Match(matchFolder);
+			this.match = new Match(ROOM_PHASE.MATCH, matchFolder, this.phaseFinishedEvent);
 		}
 		print("before prepareMaid");
 		this.prepareMaid();

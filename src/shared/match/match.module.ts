@@ -1,4 +1,4 @@
-import { MATCH_TIME } from "shared/constants.module";
+import { MATCH_FINISH, MATCH_TIME } from "shared/constants.module";
 import { TimerService } from "shared/services/timer-service.module";
 import { MatchGom } from "./match-gom.module";
 import { MyMaid } from "shared/maid/my-maid.module";
@@ -6,8 +6,10 @@ import { MyMaid } from "shared/maid/my-maid.module";
 export class Match extends MyMaid {
 	private clock: TimerService;
 	private gom: MatchGom;
-	constructor(instance: Instance) {
+	private id: number;
+	constructor(id: number, instance: Instance, finishedEvent: BindableEvent) {
 		super();
+		this.id = id;
 		print("Match --- ");
 		/* 
 		setup desk, stage and phone
@@ -22,6 +24,7 @@ export class Match extends MyMaid {
 		this.clock.onTimeCompleted(() => {
 			this.gom.hideTime();
 			//notify it is finished
+			finishedEvent.Fire(id, MATCH_FINISH.LOOSE);
 
 			/* this.gom.closePrematch();
 			this.gom.hideTimer();
