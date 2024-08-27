@@ -64,6 +64,15 @@ export class MatchGom extends MyMaid {
 		door2.Transparency = 1;
 	}
 
+	getDeskFolder() {
+		const deskFolder = this.root.FindFirstChild("DeskBirds", true) as Folder;
+		if (!deskFolder) {
+			print("Warning not found  ", "DeskBirds");
+		}
+
+		return deskFolder;
+	}
+
 	prepareMaid(): void {
 		//nothing to add
 	}

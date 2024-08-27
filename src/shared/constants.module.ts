@@ -16,6 +16,16 @@ export enum MATCH_FINISH {
 	LOOSE = 1,
 }
 
+export enum SLOT_VALUE {
+	EMPTY = 0,
+	RED = 1,
+	GREEN = 2,
+	BLUE = 3,
+	PURPLE = 4,
+}
+
+export const SLOT_VALUE_STRINGS = ["EMPTY", "RED", "GREEN", "BLUE", "PURPLE"];
+
 export const PREMATCH_TIME = 5; //15
 export const MATCH_TIME = 60; //60
 export const PLAYER_JUMP_HEIGHT = 7.2;
