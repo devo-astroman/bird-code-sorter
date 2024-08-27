@@ -1,6 +1,9 @@
-export class MatchGom {
+import { MyMaid } from "shared/maid/my-maid.module";
+
+export class MatchGom extends MyMaid {
 	private root: Folder;
 	constructor(root: Folder) {
+		super();
 		this.root = root;
 	}
 
@@ -61,7 +64,7 @@ export class MatchGom {
 		door2.Transparency = 1;
 	}
 
-	Destroy() {
-		//
+	prepareMaid(): void {
+		//nothing to add
 	}
 }

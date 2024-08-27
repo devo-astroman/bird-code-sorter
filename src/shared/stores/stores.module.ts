@@ -1,11 +1,13 @@
 import { ROOM_PHASE } from "shared/constants.module";
 import { RoomStore } from "./room-store.module";
 import { PlayerStore } from "./player-store.module";
+import { MyMaid } from "shared/maid/my-maid.module";
 
-export class Stores {
+export class Stores extends MyMaid {
 	private roomStore: RoomStore;
 	private playerStore: PlayerStore;
 	constructor() {
+		super();
 		this.roomStore = new RoomStore();
 		this.playerStore = new PlayerStore();
 	}
@@ -30,7 +32,7 @@ export class Stores {
 		this.playerStore.setPlayers(players);
 	}
 
-	Destroy() {
-		//
+	prepareMaid(): void {
+		this.addListToMaid([this.roomStore, this.playerStore]);
 	}
 }

@@ -1,4 +1,6 @@
-export class TimerService {
+import { MyMaid } from "shared/maid/my-maid.module";
+
+export class TimerService extends MyMaid {
 	private totalSecs = 1;
 	private onOneSecDoFn: (sec: number) => void = (i) => {};
 	private onOneSecComplementDoFn: (sec: number) => void = (i) => {};
@@ -13,6 +15,7 @@ export class TimerService {
 	private isClockRunning = false;
 
 	constructor() {
+		super();
 		this.promiseFn = (resolve, reject) => {
 			for (let i = 0; i < this.totalSecs; i++) {
 				if (this.cancelPromise) {
@@ -66,5 +69,9 @@ export class TimerService {
 
 	isTimerRunning() {
 		return this.isClockRunning;
+	}
+
+	prepareMaid(): void {
+		this.addListToMaid([this.activePromise as any]);
 	}
 }

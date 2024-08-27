@@ -1,11 +1,13 @@
 import { MATCH_TIME } from "shared/constants.module";
 import { TimerService } from "shared/services/timer-service.module";
 import { MatchGom } from "./match-gom.module";
+import { MyMaid } from "shared/maid/my-maid.module";
 
-export class Match {
+export class Match extends MyMaid {
 	private clock: TimerService;
 	private gom: MatchGom;
 	constructor(instance: Instance) {
+		super();
 		print("Match --- ");
 		/* 
 		setup desk, stage and phone
@@ -36,7 +38,7 @@ export class Match {
 		this.gom.openMatch();
 	}
 
-	Destroy() {
-		print("Prematch.destroy");
+	prepareMaid(): void {
+		this.addListToMaid([this.clock, this.gom]);
 	}
 }

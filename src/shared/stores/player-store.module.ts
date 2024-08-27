@@ -1,9 +1,11 @@
 import { MutableLiveData, Observer } from "@rbxts/observer";
+import { MyMaid } from "shared/maid/my-maid.module";
 
-export class PlayerStore {
+export class PlayerStore extends MyMaid {
 	private playerCharacters$ = new Observer<Model[]>();
 	private state = new MutableLiveData<Model[]>();
 	constructor() {
+		super();
 		print("player store");
 	}
 
@@ -38,5 +40,9 @@ export class PlayerStore {
 
 	getValue() {
 		return this.state.getValue();
+	}
+
+	prepareMaid(): void {
+		this.addListToMaid([this.playerCharacters$, this.state as any]);
 	}
 }

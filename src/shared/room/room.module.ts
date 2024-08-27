@@ -4,8 +4,9 @@ import { Prematch } from "shared/prematch/prematch.module";
 import { Stores } from "shared/stores/stores.module";
 import { RoomGom } from "./room-gom.module";
 import { Match } from "shared/match/match.module";
+import { MyMaid } from "shared/maid/my-maid.module";
 
-export class Room {
+export class Room extends MyMaid {
 	private stores: Stores;
 	private gom: RoomGom;
 
@@ -17,7 +18,8 @@ export class Room {
 
 	private phaseFinishedEvent: BindableEvent;
 	constructor(instance: Instance) {
-		print(" - Room -");
+		super();
+		print("- Room -");
 		this.stores = new Stores();
 		this.gom = new RoomGom(instance);
 		this.room$ = this.stores.getRoomStoreState$();
@@ -43,6 +45,8 @@ export class Room {
 		if (matchFolder) {
 			this.match = new Match(matchFolder);
 		}
+		print("before prepareMaid");
+		this.prepareMaid();
 	}
 
 	init() {
@@ -67,8 +71,7 @@ export class Room {
 		this.stores.setRoomStoreState(ROOM_PHASE.PREMATCH);
 	}
 
-	Destroy() {
-		print("Prematch.destroy");
-		this.stores.Destroy();
+	prepareMaid() {
+		this.addListToMaid([this.stores, this.gom, this.preMatch, this.match]);
 	}
 }

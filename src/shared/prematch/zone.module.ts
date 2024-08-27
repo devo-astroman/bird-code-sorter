@@ -1,6 +1,7 @@
+import { MyMaid } from "shared/maid/my-maid.module";
 import { ZoneGom } from "./zone-gom";
 
-export class Zone {
+export class Zone extends MyMaid {
 	private zonePart: Part;
 	private gom: ZoneGom;
 	private playersInside: Model[] = [];
@@ -8,6 +9,7 @@ export class Zone {
 	private onLastPlayerExitFn: () => void;
 
 	constructor(zonePart: Part, onFirstPlayerEnterFn: () => void, onLastPlayerExitFn: () => void) {
+		super();
 		this.onFirstPlayerEnterFn = onFirstPlayerEnterFn;
 		this.onLastPlayerExitFn = onLastPlayerExitFn;
 		this.zonePart = zonePart;
@@ -55,9 +57,7 @@ export class Zone {
 			this.gom.allowPlayerJump(playerCharacter);
 		});
 	}
-
-	Destroy() {
-		print("Prematch.destroy");
-		this.gom.Destroy();
+	prepareMaid(): void {
+		this.addListToMaid([this.gom]);
 	}
 }

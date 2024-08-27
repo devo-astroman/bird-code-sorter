@@ -1,11 +1,13 @@
 import { PLAYER_JUMP_HEIGHT } from "shared/constants.module";
+import { MyMaid } from "shared/maid/my-maid.module";
 import { isPlayerUpperTorso } from "shared/services/player-game-service.module";
 
-export class ZoneGom {
+export class ZoneGom extends MyMaid {
 	private part: Part;
 	private connectionEnter!: RBXScriptConnection;
 	private connectionExit!: RBXScriptConnection;
 	constructor(part: Part) {
+		super();
 		this.part = part;
 	}
 
@@ -50,7 +52,7 @@ export class ZoneGom {
 		humanoid.JumpHeight = PLAYER_JUMP_HEIGHT;
 	}
 
-	Destroy() {
-		//remove touched and touchended connection
+	prepareMaid(): void {
+		this.addListToMaid([this.connectionEnter, this.connectionExit]);
 	}
 }

@@ -11,3 +11,11 @@ binder.Start();
 binder.GetAll().forEach((element: Room) => {
 	element.init();
 });
+
+/* To test maid */
+/* wait(5);
+print("before room destruction");
+binder.GetAll().forEach((element: Room) => {
+	element.Destroy();
+}); */
+/*--- To test maid */

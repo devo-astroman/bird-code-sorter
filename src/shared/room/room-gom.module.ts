@@ -1,9 +1,12 @@
+import { MyMaid } from "shared/maid/my-maid.module";
 import { ROOM_PHASE } from "shared/constants.module";
 
-export class RoomGom {
+export class RoomGom extends MyMaid {
 	private root: Instance;
 	private connection!: RBXScriptConnection;
+
 	constructor(root: Instance) {
+		super();
 		this.root = root;
 	}
 
@@ -36,7 +39,7 @@ export class RoomGom {
 		this.connection = event.Event.Connect(cb);
 	}
 
-	Destroy() {
-		if (this.connection) this.connection.Disconnect();
+	prepareMaid(): void {
+		this.addListToMaid([this.connection]);
 	}
 }

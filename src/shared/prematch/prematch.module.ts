@@ -2,14 +2,16 @@ import { TimerService } from "shared/services/timer-service.module";
 import { PrematchGom } from "./prematch-gom";
 import { Zone } from "./zone.module";
 import { PREMATCH_TIME } from "shared/constants.module";
+import { MyMaid } from "shared/maid/my-maid.module";
 
-export class Prematch {
+export class Prematch extends MyMaid {
 	private gom: PrematchGom;
 	private zone!: Zone;
 	private clock: TimerService;
 	private id: number;
 
 	constructor(id: number, instance: Instance, finishedEvent: BindableEvent) {
+		super();
 		print("Prematch --- ", instance);
 		this.id = id;
 		this.clock = new TimerService();
@@ -51,6 +53,10 @@ export class Prematch {
 		print("prematch.init");
 		this.gom.openPrematch();
 		this.zone.init();
+	}
+
+	prepareMaid(): void {
+		this.addListToMaid([this.clock, this.gom, this.zone]);
 	}
 
 	Destroy() {
