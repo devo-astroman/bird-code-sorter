@@ -1,5 +1,5 @@
 import { Observer } from "@rbxts/observer";
-import { MATCH_FINISH, ROOM_PHASE } from "shared/constants.module";
+import { MATCH_FINISH, PLAYER_IN_MATCH_DATA, ROOM_PHASE } from "shared/constants.module";
 import { Prematch } from "shared/prematch/prematch.module";
 import { Stores } from "shared/stores/stores.module";
 import { RoomGom } from "./room-gom.module";
@@ -11,7 +11,7 @@ export class Room extends MyMaid {
 	private gom: RoomGom;
 
 	private room$: Observer<ROOM_PHASE>;
-	private players$: Observer<Model[]>;
+	private players$: Observer<PLAYER_IN_MATCH_DATA[]>;
 
 	private preMatch!: Prematch;
 	private match!: Match;
@@ -51,7 +51,14 @@ export class Room extends MyMaid {
 		}
 		const matchFolder = this.gom.getMatchFolder();
 		if (matchFolder) {
-			this.match = new Match(ROOM_PHASE.MATCH, matchFolder, this.phaseFinishedEvent);
+			this.match = new Match(ROOM_PHASE.MATCH, matchFolder, this.stores);
+			this.match.getPlayerInteractionEvent().Event.Connect((data) => {
+				print("Interaction data ", data);
+			});
+
+			this.match.getFinishedEvent().Event.Connect((data) => {
+				print("Finished data ", data);
+			});
 		}
 		print("before prepareMaid");
 		this.prepareMaid();

@@ -73,6 +73,24 @@ export class MatchGom extends MyMaid {
 		return deskFolder;
 	}
 
+	getPlayerInteractionEvent() {
+		const playerInteractionEvent = this.root.FindFirstChild("PlayerInteractionEvent") as BindableEvent;
+		if (!playerInteractionEvent) {
+			print("Warning not found  ", "PlayerInteractionEvent");
+		}
+
+		return playerInteractionEvent;
+	}
+
+	getFinishedEvent() {
+		const finishedEvent = this.root.FindFirstChild("FinishedEvent") as BindableEvent;
+		if (!finishedEvent) {
+			print("Warning not found  ", "FinishedEvent");
+		}
+
+		return finishedEvent;
+	}
+
 	prepareMaid(): void {
 		//nothing to add
 	}

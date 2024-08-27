@@ -4,6 +4,11 @@ export const PREMATCH_TAG = "PREMATCH_TAG";
 export const PLAYER_CHARACTER_TAG = "PLAYER_CHARACTER_TAG";
 export const PLAYER_UPPER_TORSO_TAG = "PLAYER_UPPER_TORSO_TAG";
 
+export interface PLAYER_IN_MATCH_DATA {
+	playerCharacter: Model;
+	handValue: SLOT_VALUE;
+}
+
 export enum ROOM_PHASE {
 	PREMATCH = 0,
 	MATCH = 1,
@@ -18,6 +23,13 @@ export enum MATCH_FINISH {
 
 export enum SLOT_VALUE {
 	EMPTY = 0,
+	RED = 1,
+	GREEN = 2,
+	BLUE = 3,
+	PURPLE = 4,
+}
+
+export enum BIRD_VALUE {
 	RED = 1,
 	GREEN = 2,
 	BLUE = 3,
