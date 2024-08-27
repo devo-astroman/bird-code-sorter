@@ -1,6 +1,8 @@
+import { ROOM_PHASE } from "shared/constants.module";
+
 export class RoomGom {
 	private root: Instance;
-	private connection: RBXScriptConnection;
+	private connection!: RBXScriptConnection;
 	constructor(root: Instance) {
 		this.root = root;
 	}
@@ -29,7 +31,7 @@ export class RoomGom {
 		return event as BindableEvent;
 	}
 
-	onPhaseFinished(cb: (players: Model[]) => void) {
+	onPhaseFinished(cb: (id: ROOM_PHASE, players: Model[]) => void) {
 		const event = this.getPhaseFinishedEvent() as BindableEvent;
 		this.connection = event.Event.Connect(cb);
 	}

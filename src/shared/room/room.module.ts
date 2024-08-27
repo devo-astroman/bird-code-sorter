@@ -24,9 +24,11 @@ export class Room {
 		this.players$ = this.stores.getPlayerStoreState$();
 		this.phaseFinishedEvent = this.gom.getPhaseFinishedEvent();
 
-		this.gom.onPhaseFinished((players) => {
-			this.stores.setPlayersStoreState(players);
-			this.stores.setRoomStoreState(ROOM_PHASE.MATCH);
+		this.gom.onPhaseFinished((id: ROOM_PHASE, players: Model[]) => {
+			if (id === ROOM_PHASE.PREMATCH) {
+				this.stores.setPlayersStoreState(players);
+				this.stores.setRoomStoreState(ROOM_PHASE.MATCH);
+			}
 		});
 
 		this.players$.connect((data) => {
@@ -35,7 +37,7 @@ export class Room {
 
 		const prematchFolder = this.gom.getPrematchFolder();
 		if (prematchFolder) {
-			this.preMatch = new Prematch(prematchFolder, this.phaseFinishedEvent);
+			this.preMatch = new Prematch(ROOM_PHASE.PREMATCH, prematchFolder, this.phaseFinishedEvent);
 		}
 		const matchFolder = this.gom.getMatchFolder();
 		if (matchFolder) {

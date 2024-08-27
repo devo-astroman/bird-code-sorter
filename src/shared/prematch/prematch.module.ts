@@ -7,9 +7,11 @@ export class Prematch {
 	private gom: PrematchGom;
 	private zone!: Zone;
 	private clock: TimerService;
+	private id: number;
 
-	constructor(instance: Instance, finishedEvent: BindableEvent) {
+	constructor(id: number, instance: Instance, finishedEvent: BindableEvent) {
 		print("Prematch --- ", instance);
+		this.id = id;
 		this.clock = new TimerService();
 
 		this.gom = new PrematchGom(instance as Folder);
@@ -41,7 +43,7 @@ export class Prematch {
 			this.zone.end();
 			//notify it is finished
 			const players = this.zone.getPlayersInZone();
-			finishedEvent.Fire(players);
+			finishedEvent.Fire(id, players);
 		});
 	}
 
