@@ -73,6 +73,15 @@ export class MatchGom extends MyMaid {
 		return deskFolder;
 	}
 
+	getStageFolder() {
+		const stageFolder = this.root.FindFirstChild("StageBirds", true) as Folder;
+		if (!stageFolder) {
+			print("Warning not found  ", "StageBirds");
+		}
+
+		return stageFolder;
+	}
+
 	getPlayerInteractionEvent() {
 		const playerInteractionEvent = this.root.FindFirstChild("PlayerInteractionEvent") as BindableEvent;
 		if (!playerInteractionEvent) {

@@ -11,6 +11,7 @@ export class Match extends MyMaid {
 	private gom: MatchGom;
 	private id: number;
 	private desk: SlotLine;
+	private stage: SlotLine;
 	private playerInteractionEvent: BindableEvent;
 	private finishedEvent: BindableEvent;
 	private stores: Stores;
@@ -38,15 +39,15 @@ export class Match extends MyMaid {
 		});
 
 		const deskFolder = this.gom.getDeskFolder();
-		this.desk = new SlotLine(0, deskFolder);
+		this.desk = new SlotLine(LOCATION.DESK, deskFolder);
+		const stageFolder = this.gom.getStageFolder();
+		this.stage = new SlotLine(LOCATION.STAGE, stageFolder);
 
 		///to test
 		this.desk
 			.getChangeEvent()
 			.Event.Connect((interactionData: { player: Player; idSlot: ID_SLOTS; slotValue: SLOT_VALUE }, deskData) => {
 				print("monitor: interaction data", interactionData);
-
-				//playerInteractionEvent.Fire();
 
 				const nData = deskData as { id: number; value: number }[];
 				print(
@@ -75,17 +76,43 @@ export class Match extends MyMaid {
 				} else {
 					print("Warning there is no matchState ");
 				}
-
-				/* 
-					playerHandValue = matchStore.getHandValue of the player
-					if(playerHandValue is empty and slotId)
-				
-				
-				*/
-
-				//this.playerInteractionEvent.Fire(value);
-				//this.stores.setMatchStoreBirdLocation(BIRD_VALUE.GREEN, PLACE.HUMAN, 123);
 			});
+
+		this.stage
+			.getChangeEvent()
+			.Event.Connect(
+				(interactionData: { player: Player; idSlot: ID_SLOTS; slotValue: SLOT_VALUE }, stageData) => {
+					print("monitor: interaction data", interactionData);
+
+					const nData = stageData as { id: number; value: number }[];
+					print(
+						"monitor: slotline data",
+						nData.map((dData: { id: number; value: number }) => ({ id: dData.id, value: dData.value }))
+					);
+
+					const { player, idSlot } = interactionData;
+					const matchState = stores.getMatchStoreState();
+
+					if (matchState) {
+						const stateUpdateData = getNewStateFromInteraction(
+							{
+								player,
+								location: LOCATION.STAGE,
+								idSlot
+							},
+							matchState
+						);
+						const { updated, newState } = stateUpdateData;
+						if (updated && newState) {
+							this.stores.setMatchStoreState(newState);
+						} else {
+							print("nothing to update probably print empty message ");
+						}
+					} else {
+						print("Warning there is no matchState ");
+					}
+				}
+			);
 
 		///
 
