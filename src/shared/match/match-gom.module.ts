@@ -100,6 +100,15 @@ export class MatchGom extends MyMaid {
 		return finishedEvent;
 	}
 
+	getPhoneFolder() {
+		const phoneFolder = this.root.FindFirstChild("Phone", true) as Folder;
+		if (!phoneFolder) {
+			print("Warning not found  ", "Phone");
+		}
+
+		return phoneFolder;
+	}
+
 	prepareMaid(): void {
 		//nothing to add
 	}

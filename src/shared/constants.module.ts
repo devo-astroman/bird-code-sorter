@@ -63,3 +63,7 @@ export interface STATE_MODIFICACION_DATA {
 }
 
 export const ATTACHMENT_WELD_NAME = "BirdStatue";
+export const activeScreenPhoneColor = new Color3(0, 255, 0);
+export const inactiveScreenPhoneColor = new Color3(0, 0, 0);
+
+export const SLOTS_DESK_INITIAL_VALUES = [SLOT_VALUE.RED, SLOT_VALUE.PURPLE, SLOT_VALUE.GREEN, SLOT_VALUE.BLUE];

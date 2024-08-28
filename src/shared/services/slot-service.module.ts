@@ -1,4 +1,4 @@
-import { ID_SLOTS, ID_SLOTS_INDEX, SLOT_VALUE, SLOT_VALUE_COLORS } from "shared/constants.module";
+import { ID_SLOTS, ID_SLOTS_INDEX, SLOT_VALUE, SLOT_VALUE_COLORS, SLOT_VALUE_STRINGS } from "shared/constants.module";
 
 export const fromSlotValueToColor3 = (slotValue: SLOT_VALUE) => {
 	return SLOT_VALUE_COLORS[slotValue];
@@ -14,4 +14,13 @@ export const fromIndexToIdSlot = (index: number) => {
 
 export const fromIdSlotToIndex = (idSlot: ID_SLOTS) => {
 	return idSlot as number;
+};
+
+export const fromSlotValueToString = (value: SLOT_VALUE) => {
+	return SLOT_VALUE_STRINGS[value];
+};
+
+export const printSlotInString = (slotValues: SLOT_VALUE[]) => {
+	const stringValues = slotValues.map((sV) => fromSlotValueToString(sV));
+	print(stringValues);
 };

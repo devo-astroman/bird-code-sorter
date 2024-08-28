@@ -4,8 +4,14 @@ import { MatchGom } from "./match-gom.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { SlotLine } from "./slot-line/slot-line.module";
 import { Stores } from "shared/stores/stores.module";
-import { getNewStateFromInteraction } from "shared/services/match-evaluator.module";
+import {
+	countSamePositions,
+	generateGoalCombination,
+	getNewStateFromInteraction
+} from "shared/services/match-evaluator.module";
 import { PlayerHand } from "./player-hand/player-hand.module";
+import { Phone } from "./phone/phone.module";
+import { printSlotInString } from "shared/services/slot-service.module";
 
 export class Match extends MyMaid {
 	private clock: TimerService;
@@ -13,6 +19,8 @@ export class Match extends MyMaid {
 	private id: number;
 	private desk: SlotLine;
 	private stage: SlotLine;
+	private stageGoal: SLOT_VALUE[];
+	private phone: Phone;
 	private playersHand: PlayerHand[] = [];
 	private playerInteractionEvent: BindableEvent;
 	private finishedEvent: BindableEvent;
@@ -23,6 +31,7 @@ export class Match extends MyMaid {
 		super();
 		this.id = id;
 		this.stores = stores;
+		this.stageGoal = generateGoalCombination();
 		print("Match --- ");
 
 		/* 
@@ -34,13 +43,31 @@ export class Match extends MyMaid {
 		this.finishedEvent = this.gom.getFinishedEvent();
 		this.gom.hideTime();
 
+		const phoneFolder = this.gom.getPhoneFolder();
+		this.phone = new Phone(phoneFolder);
+
+		this.phone.getClickedBindableEvent().Event.Connect(() => {
+			const stageValues = this.stores.getMatchStoreState()?.stage;
+
+			if (!stageValues) {
+				print("Warning there is no stageValues");
+			} else {
+				print("stageValues ");
+				printSlotInString(stageValues);
+				print("stageGoal ");
+				printSlotInString(this.stageGoal);
+				const nCorrects = countSamePositions(stageValues, this.stageGoal);
+				this.phone.playSoundNTimes(nCorrects);
+			}
+		});
+
 		this.stores.getMatchStoreState$().connect((data) => {
 			if (data) {
 				const deskData = data.desk.map((d, i) => ({ id: i, value: d }));
 				this.desk.setSlotValues(deskData);
 				const stageData = data.stage.map((s, i) => ({ id: i, value: s }));
 				this.stage.setSlotValues(stageData);
-				print("flag!!!");
+
 				data.handPlayers.forEach((hP) => {
 					const hPlayer = this.playersHand.find((playerH) => playerH.getUserId() === hP.userId);
 
@@ -54,6 +81,14 @@ export class Match extends MyMaid {
 						this.playersHand.push(handPlayer);
 					}
 				});
+
+				//check if all stage slots are busy
+				const existSomeEmptySlot = stageData.some((sData) => sData.value === SLOT_VALUE.EMPTY);
+				if (existSomeEmptySlot) {
+					this.phone.turnOffPhone();
+				} else {
+					this.phone.turnOnPhone();
+				}
 			}
 		});
 
