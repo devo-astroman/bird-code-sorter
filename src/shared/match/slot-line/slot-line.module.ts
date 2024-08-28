@@ -1,7 +1,7 @@
 import { MyMaid } from "shared/maid/my-maid.module";
 import { SlotLineGom } from "./slot-line-gom.module";
 import { Slot } from "./slot.module";
-import { SLOT_VALUE } from "shared/constants.module";
+import { ID_SLOTS, SLOT_VALUE } from "shared/constants.module";
 import { fromIndexToIdSlot } from "shared/services/slot-service.module";
 
 export class SlotLine extends MyMaid {
@@ -9,7 +9,7 @@ export class SlotLine extends MyMaid {
 	private gom: SlotLineGom;
 	private changeEvent: BindableEvent;
 	private slotsData: {
-		id: number;
+		id: ID_SLOTS;
 		value: SLOT_VALUE;
 		slot: Slot;
 	}[] = [];
@@ -37,7 +37,7 @@ export class SlotLine extends MyMaid {
 			const sData = {
 				id: i,
 				value: initValue,
-				slot,
+				slot
 			};
 
 			this.slotsData.push(sData);
@@ -58,6 +58,18 @@ export class SlotLine extends MyMaid {
 			slotData.value = newValue;
 			slotData.slot.setValue(newValue);
 		}
+	}
+
+	setSlotValues(newSlotsData: { id: ID_SLOTS; value: SLOT_VALUE }[]) {
+		this.slotsData.forEach((sData) => {
+			const newSlotData = newSlotsData.find((nValue) => nValue.id === sData.id);
+			if (!newSlotData) {
+				print("Warning there is no slotData with that id ", sData.id);
+			} else {
+				sData.value = newSlotData.value;
+				sData.slot.setValue(newSlotData.value);
+			}
+		});
 	}
 
 	prepareMaid(): void {

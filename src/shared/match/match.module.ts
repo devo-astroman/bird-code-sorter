@@ -34,8 +34,12 @@ export class Match extends MyMaid {
 		wait(5);
 
 		this.stores.getMatchStoreState$().connect((data) => {
-			print("MATCH STORES !!! ", data);
-			//should pass the data to desk, stage and playersInMatch
+			if (data) {
+				const deskData = data.desk.map((d, i) => ({ id: i, value: d }));
+				this.desk.setSlotValues(deskData);
+				const stageData = data.stage.map((s, i) => ({ id: i, value: s }));
+				this.stage.setSlotValues(stageData);
+			}
 		});
 
 		const deskFolder = this.gom.getDeskFolder();
