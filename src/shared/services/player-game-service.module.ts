@@ -51,3 +51,11 @@ export function getCharacterFromUserId(userId: number) {
 		return pS.CreateHumanoidModelFromUserId(userId);
 	}
 }
+
+export const getHumanoidFromUserId = (userId: number) => {
+	const character = getCharacterFromUserId(userId);
+
+	const humanoid = character.FindFirstChild("Humanoid", true) as Humanoid;
+
+	return humanoid;
+};

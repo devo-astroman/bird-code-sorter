@@ -6,6 +6,7 @@ import { RoomGom } from "./room-gom.module";
 import { Match } from "shared/match/match.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { getUserIdFromPlayerCharacter } from "shared/services/player-game-service.module";
+import { Loose } from "shared/loose/loose.module";
 
 export class Room extends MyMaid {
 	private stores: Stores;
@@ -16,6 +17,7 @@ export class Room extends MyMaid {
 
 	private preMatch!: Prematch;
 	private match!: Match;
+	private loose!: Loose;
 
 	private phaseFinishedEvent: BindableEvent;
 	constructor(instance: Instance) {
@@ -58,10 +60,19 @@ export class Room extends MyMaid {
 				print("Interaction data ", data);
 			});
 
-			this.match.getFinishedEvent().Event.Connect((data) => {
+			this.match.getFinishedEvent().Event.Connect((data: unknown) => {
 				print("Finished data ", data);
+				if (data === MATCH_FINISH.WIN) {
+					//congrats the player
+					this.stores.setRoomStoreState(ROOM_PHASE.WIN);
+				} else {
+					//congrats the player
+					this.stores.setRoomStoreState(ROOM_PHASE.LOOSE);
+				}
 			});
 		}
+
+		this.loose = new Loose(0, this.stores);
 		print("before prepareMaid");
 		this.prepareMaid();
 	}
@@ -81,6 +92,10 @@ export class Room extends MyMaid {
 					print("win");
 				} else if (phase === ROOM_PHASE.LOOSE) {
 					print("loose");
+					//this.match.Destroy(); //
+
+					//loop through all the players and explote them
+					this.loose.killPlayers();
 				}
 			}
 		});

@@ -26,7 +26,7 @@ export class Match extends MyMaid {
 	private finishedEvent: BindableEvent;
 	private stores: Stores;
 
-	//private stageChangeEvent: BindableEvent;
+	//move connection to gom
 	constructor(id: number, instance: Instance, stores: Stores) {
 		super();
 		this.id = id;
@@ -58,6 +58,11 @@ export class Match extends MyMaid {
 				printSlotInString(this.stageGoal);
 				const nCorrects = countSamePositions(stageValues, this.stageGoal);
 				this.phone.playSoundNTimes(nCorrects);
+
+				if (nCorrects === this.stageGoal.size()) {
+					//fire  Won game
+					this.finishedEvent.Fire(MATCH_FINISH.WIN);
+				}
 			}
 		});
 
@@ -202,6 +207,6 @@ export class Match extends MyMaid {
 	}
 
 	prepareMaid(): void {
-		this.addListToMaid([this.clock, this.gom]);
+		this.addListToMaid([this.clock, this.gom, this.phone, this.desk, this.stage]);
 	}
 }
