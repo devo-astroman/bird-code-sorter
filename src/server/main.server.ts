@@ -8,6 +8,7 @@ Players.PlayerAdded.Connect(onPlayerAdded);
 
 const binder = new Binder(ROOM_TAG, Room);
 binder.Start();
+wait(5); // to ensure room is binded
 binder.GetAll().forEach((element: Room) => {
 	element.init();
 });

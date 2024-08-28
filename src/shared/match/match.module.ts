@@ -1,9 +1,10 @@
-import { ID_SLOTS, MATCH_FINISH, MATCH_TIME, SLOT_VALUE } from "shared/constants.module";
+import { ID_SLOTS, LOCATION, MATCH_FINISH, MATCH_TIME, SLOT_VALUE } from "shared/constants.module";
 import { TimerService } from "shared/services/timer-service.module";
 import { MatchGom } from "./match-gom.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { SlotLine } from "./slot-line/slot-line.module";
 import { Stores } from "shared/stores/stores.module";
+import { getNewStateFromInteraction } from "shared/services/match-evaluator.module";
 
 export class Match extends MyMaid {
 	private clock: TimerService;
@@ -50,10 +51,24 @@ export class Match extends MyMaid {
 				const nData = deskData as { id: number; value: number }[];
 				print(
 					"monitor: slotline data",
-					nData.map((dData: { id: number; value: number }) => ({ id: dData.id, value: dData.value })),
+					nData.map((dData: { id: number; value: number }) => ({ id: dData.id, value: dData.value }))
 				);
 
-				const { player, idSlot, slotValue } = interactionData;
+				const { player, idSlot } = interactionData;
+				const matchState = stores.getMatchStoreState();
+
+				if (matchState) {
+					const newState = getNewStateFromInteraction(
+						{
+							player,
+							location: LOCATION.DESK,
+							idSlot
+						},
+						matchState
+					);
+				} else {
+					print("Warning there is no matchState ");
+				}
 
 				/* 
 					playerHandValue = matchStore.getHandValue of the player
@@ -61,11 +76,6 @@ export class Match extends MyMaid {
 				
 				
 				*/
-
-				if (slotValue === SLOT_VALUE.EMPTY) {
-					//player with empty hands is taking a bird - should add a bird to players hand and remove the bird from the desk
-					//is player hand empty? check in the store if the player with the user id is assigned to any of the birds
-				}
 
 				//this.playerInteractionEvent.Fire(value);
 				//this.stores.setMatchStoreBirdLocation(BIRD_VALUE.GREEN, PLACE.HUMAN, 123);

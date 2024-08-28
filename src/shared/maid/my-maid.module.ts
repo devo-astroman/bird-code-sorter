@@ -5,10 +5,12 @@ export abstract class MyMaid {
 
 	abstract prepareMaid(): void;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	addListToMaid(list: ({ Destroy: () => void } | RBXScriptConnection)[]) {
 		print("adding to maid ", list);
 		list.forEach((element) => {
-			if (!!element) this.maid.GiveTask(element);
+			// eslint-disable-next-line roblox-ts/lua-truthiness
+			if (element) this.maid.GiveTask(element);
 		});
 	}
 

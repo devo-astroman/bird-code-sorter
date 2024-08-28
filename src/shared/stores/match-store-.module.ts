@@ -20,7 +20,7 @@ export class MatchStore extends MyMaid {
 		this.state.setValue({
 			desk: [SLOT_VALUE.RED, SLOT_VALUE.GREEN, SLOT_VALUE.BLUE, SLOT_VALUE.PURPLE],
 			stage: [SLOT_VALUE.EMPTY, SLOT_VALUE.EMPTY, SLOT_VALUE.EMPTY, SLOT_VALUE.EMPTY],
-			handPlayers: [],
+			handPlayers: []
 		});
 	}
 
@@ -37,6 +37,7 @@ export class MatchStore extends MyMaid {
 	}
 
 	prepareMaid(): void {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.addListToMaid([this.match$, this.state as any]);
 	}
 }

@@ -31,7 +31,7 @@ export class Prematch extends MyMaid {
 				() => {
 					this.clock.stop();
 					this.gom.hideTimer();
-				},
+				}
 			);
 		}
 

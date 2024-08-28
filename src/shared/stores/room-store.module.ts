@@ -21,6 +21,7 @@ export class RoomStore extends MyMaid {
 	}
 
 	prepareMaid(): void {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.addListToMaid([this.phase$, this.state as any]);
 	}
 }

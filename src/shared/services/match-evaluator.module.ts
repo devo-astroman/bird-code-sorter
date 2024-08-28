@@ -1,68 +1,71 @@
 import { deepCopy } from "@rbxts/deepcopy";
-import { ID_SLOTS, LOCATION, SLOT_VALUE } from "shared/constants.module";
+import { ID_SLOTS, LOCATION, SLOT_VALUE, STATE_MODIFICACION_DATA } from "shared/constants.module";
 import { MATCH_STATE } from "shared/stores/match-store-.module";
 import { fromIdSlotToIndex } from "./slot-service.module";
 
 export const getNewStateFromInteraction = (
 	interactionData: { player: Player; location: LOCATION; idSlot: ID_SLOTS },
 	state: MATCH_STATE
-) => {
+): STATE_MODIFICACION_DATA => {
 	const { player, location, idSlot } = interactionData;
 
-	const currentState = deepCopy(state);
+	const newState = deepCopy(state);
 
 	//find hand of the player
-	const playerInteracted = currentState.handPlayers.find((hP) => player.UserId === hP.userId);
+	const playerInteracted = newState.handPlayers.find((hP) => player.UserId === hP.userId);
 
 	//find the value of that slot
 	///get if is from desk or from stage
-	let slotLine: SLOT_VALUE[] = currentState.stage;
+	let slotLine: SLOT_VALUE[];
 
 	if (location === LOCATION.DESK) {
-		slotLine = currentState.desk;
+		slotLine = newState.desk;
+	} else {
+		slotLine = newState.stage;
 	}
 
 	///get value of the slot
-	const iSlot = fromIdSlotToIndex(idSlot);
-	const slotValue = slotLine[iSlot];
-
 	if (!playerInteracted) {
 		//playerHand = SLOT_VALUE.EMPTY;
 		print(
 			"Warning there no player with that userId - should not exist interactions of player outside the handPlayers",
 			player.UserId
 		);
+
+		return {
+			updated: false,
+			newState: undefined
+		};
 	}
 
-	const playerHand = playerInteracted?.handValue ?? SLOT_VALUE.EMPTY;
+	const iSlot = fromIdSlotToIndex(idSlot);
+	const slotValue = slotLine[iSlot];
+
+	const playerHand = playerInteracted.handValue;
 
 	if (playerHand === SLOT_VALUE.EMPTY && slotValue !== SLOT_VALUE.EMPTY) {
 		//player with empty hands is taking a bird - should add a bird to players hand and remove the bird from the slotline
-
 		slotLine[idSlot] = SLOT_VALUE.EMPTY;
-
-		/* const takenBird = data.value;
-		playersBirdData.setPlayerStatus(player.Name, takenBird);
-		this.setSlotValue(data.part, SLOT_VALUE.Empty);
-		this.birdDisplayer.update(this.slotParts);
-		this.registerFn(this.slotParts); */
-	} /* else if (playerStatus.holdingBird !== SLOT_VALUE.Empty && data.value !== SLOT_VALUE.Empty) {
-		//player with busy hands is tryng to take a bird - should switch one bird for another
-		const takenBird = data.value;
-		const inHandBird = playerStatus.holdingBird;
-		playersBirdData.setPlayerStatus(player.Name, takenBird);
-		this.setSlotValue(data.part, inHandBird);
-		this.birdDisplayer.update(this.slotParts);
-		this.registerFn(this.slotParts);
-	} else if (playerStatus.holdingBird !== SLOT_VALUE.Empty && data.value === SLOT_VALUE.Empty) {
-		//player with busy hands is placing the bird in a empty slot - should move a bird from players hands to desk
-		const inHandBird = playerStatus.holdingBird;
-		playersBirdData.setPlayerStatus(player.Name, SLOT_VALUE.Empty);
-		this.setSlotValue(data.part, inHandBird);
-		this.birdDisplayer.update(this.slotParts);
-		this.registerFn(this.slotParts);
-	} else if (playerStatus.holdingBird === SLOT_VALUE.Empty && data.value === SLOT_VALUE.Empty) {
+		playerInteracted.handValue = slotValue;
+	} else if (playerHand !== SLOT_VALUE.EMPTY && slotValue !== SLOT_VALUE.EMPTY) {
+		//player with busy hands is tryng to take a bird - should switch one bird with the other
+		const bird = playerHand;
+		playerInteracted.handValue = slotLine[idSlot];
+		slotLine[idSlot] = bird;
+	} else if (playerHand !== SLOT_VALUE.EMPTY && slotValue === SLOT_VALUE.EMPTY) {
+		//player with busy hands is placing the bird in a empty slot - should move a bird from players hands to slotline
+		slotLine[idSlot] = playerInteracted.handValue;
+		playerInteracted.handValue = SLOT_VALUE.EMPTY;
+	} else if (playerHand === SLOT_VALUE.EMPTY && slotValue === SLOT_VALUE.EMPTY) {
 		//player with empty hands is touching an empty slot - should show a message saying "hmmm... I have to put something here"
-		print("I have to put something here");
-	} */
+		//do nothing to state
+	}
+
+	print("old state ", state);
+	print("new state ", newState);
+
+	return {
+		updated: true,
+		newState
+	};
 };
