@@ -2,6 +2,7 @@ import { MyMaid } from "shared/maid/my-maid.module";
 import { SlotLineGom } from "./slot-line-gom.module";
 import { Slot } from "./slot.module";
 import { SLOT_VALUE } from "shared/constants.module";
+import { fromIndexToIdSlot } from "shared/services/slot-service.module";
 
 export class SlotLine extends MyMaid {
 	private id: number;
@@ -23,11 +24,12 @@ export class SlotLine extends MyMaid {
 
 		slotParts.forEach((sPart, i) => {
 			const initValue = SLOT_VALUE.EMPTY;
-			const slot = new Slot(i, sPart, SLOT_VALUE.EMPTY);
+			const idSlot = fromIndexToIdSlot(i);
+			const slot = new Slot(idSlot, sPart, SLOT_VALUE.EMPTY);
 			slot.getInteracted().Event.Connect((player, id, value) => {
 				slot.setValue(SLOT_VALUE.BLUE); //to test!! the value depends on the players hand
 
-				const interactionData = { player, id, value };
+				const interactionData = { player, idSlot: id, slotValue: value };
 				this.setSlotValue(id, SLOT_VALUE.BLUE);
 
 				this.changeEvent.Fire(interactionData, this.slotsData);

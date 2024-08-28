@@ -13,12 +13,12 @@ export enum ROOM_PHASE {
 	PREMATCH = 0,
 	MATCH = 1,
 	WIN = 2,
-	LOOSE = 3,
+	LOOSE = 3
 }
 
 export enum MATCH_FINISH {
 	WIN = 0,
-	LOOSE = 1,
+	LOOSE = 1
 }
 
 export enum SLOT_VALUE {
@@ -26,15 +26,21 @@ export enum SLOT_VALUE {
 	RED = 1,
 	GREEN = 2,
 	BLUE = 3,
-	PURPLE = 4,
+	PURPLE = 4
 }
 
-export enum BIRD_VALUE {
-	RED = 1,
-	GREEN = 2,
-	BLUE = 3,
-	PURPLE = 4,
+export enum LOCATION {
+	DESK = 0,
+	STAGE = 1
 }
+
+export enum ID_SLOTS {
+	FIRST = 0,
+	SECOND = 1,
+	THIRD = 2,
+	FOURTH = 3
+}
+export const ID_SLOTS_INDEX = [ID_SLOTS.FIRST, ID_SLOTS.SECOND, ID_SLOTS.THIRD, ID_SLOTS.FOURTH];
 
 export const SLOT_VALUE_STRINGS = ["EMPTY", "RED", "GREEN", "BLUE", "PURPLE"];
 export const SLOT_VALUE_COLORS = [
@@ -42,7 +48,7 @@ export const SLOT_VALUE_COLORS = [
 	new Color3(1, 0, 0), //RED
 	new Color3(0, 1, 0), //GREEN
 	new Color3(0, 0, 1), //BLUE
-	new Color3(0.502, 0, 0.502), //PURPLE
+	new Color3(0.502, 0, 0.502) //PURPLE
 ];
 
 export const PREMATCH_TIME = 5; //15

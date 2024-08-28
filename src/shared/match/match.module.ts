@@ -1,10 +1,9 @@
-import { BIRD_VALUE, MATCH_FINISH, MATCH_TIME } from "shared/constants.module";
+import { ID_SLOTS, MATCH_FINISH, MATCH_TIME, SLOT_VALUE } from "shared/constants.module";
 import { TimerService } from "shared/services/timer-service.module";
 import { MatchGom } from "./match-gom.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { SlotLine } from "./slot-line/slot-line.module";
 import { Stores } from "shared/stores/stores.module";
-import { PLACE } from "shared/stores/match-store.module";
 
 export class Match extends MyMaid {
 	private clock: TimerService;
@@ -34,25 +33,43 @@ export class Match extends MyMaid {
 
 		this.stores.getMatchStoreState$().connect((data) => {
 			print("MATCH STORES !!! ", data);
+			//should pass the data to desk, stage and playersInMatch
 		});
 
 		const deskFolder = this.gom.getDeskFolder();
 		this.desk = new SlotLine(0, deskFolder);
 
 		///to test
-		this.desk.getChangeEvent().Event.Connect((value: unknown, deskData) => {
-			print("monitor: interaction data", value);
+		this.desk
+			.getChangeEvent()
+			.Event.Connect((interactionData: { player: Player; idSlot: ID_SLOTS; slotValue: SLOT_VALUE }, deskData) => {
+				print("monitor: interaction data", interactionData);
 
-			//playerInteractionEvent.Fire();
+				//playerInteractionEvent.Fire();
 
-			const nData = deskData as { id: number; value: number }[];
-			print(
-				"monitor: slotline data",
-				nData.map((dData: { id: number; value: number }) => ({ id: dData.id, value: dData.value })),
-			);
+				const nData = deskData as { id: number; value: number }[];
+				print(
+					"monitor: slotline data",
+					nData.map((dData: { id: number; value: number }) => ({ id: dData.id, value: dData.value })),
+				);
 
-			this.playerInteractionEvent.Fire(value);
-		});
+				const { player, idSlot, slotValue } = interactionData;
+
+				/* 
+					playerHandValue = matchStore.getHandValue of the player
+					if(playerHandValue is empty and slotId)
+				
+				
+				*/
+
+				if (slotValue === SLOT_VALUE.EMPTY) {
+					//player with empty hands is taking a bird - should add a bird to players hand and remove the bird from the desk
+					//is player hand empty? check in the store if the player with the user id is assigned to any of the birds
+				}
+
+				//this.playerInteractionEvent.Fire(value);
+				//this.stores.setMatchStoreBirdLocation(BIRD_VALUE.GREEN, PLACE.HUMAN, 123);
+			});
 
 		///
 
@@ -67,8 +84,8 @@ export class Match extends MyMaid {
 		});
 
 		/* to test the match store */
-		wait(5);
-		this.stores.setMatchStoreBirdLocation(BIRD_VALUE.GREEN, PLACE.HUMAN, 123);
+		//wait(5);
+		//this.stores.setMatchStoreBirdLocation(BIRD_VALUE.GREEN, PLACE.HUMAN, 123);
 		/*  */
 	}
 
