@@ -2,7 +2,7 @@ import { ID_SLOTS, ROOM_PHASE } from "shared/constants.module";
 import { RoomStore } from "./room-store.module";
 import { PlayerStore } from "./player-store.module";
 import { MyMaid } from "shared/maid/my-maid.module";
-import { MatchStore } from "./match-store-.module";
+import { MATCH_STATE, MatchStore } from "./match-store-.module";
 
 export class Stores extends MyMaid {
 	private roomStore: RoomStore;
@@ -35,6 +35,10 @@ export class Stores extends MyMaid {
 		this.playerStore.setPlayers(players);
 	}
 
+	setMatchStoreState(newState: MATCH_STATE) {
+		this.matchStore.setState(newState);
+	}
+
 	getMatchStoreState$() {
 		return this.matchStore.getObserver();
 	}
@@ -43,9 +47,9 @@ export class Stores extends MyMaid {
 		return this.matchStore.getValue();
 	}
 
-	/* setMatchStoreBirdLocation(idBird: BIRD_VALUE, place: PLACE, detailPlace: ID_SLOTS | number) {
-		return this.matchStore.setBirdPlacePosition(idBird, place, detailPlace);
-	} */
+	setMatchStorePlayers(playersUserId: number[]) {
+		this.matchStore.setPlayersUserId(playersUserId);
+	}
 
 	prepareMaid(): void {
 		this.addListToMaid([this.roomStore, this.playerStore]);

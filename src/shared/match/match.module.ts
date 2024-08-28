@@ -58,7 +58,7 @@ export class Match extends MyMaid {
 				const matchState = stores.getMatchStoreState();
 
 				if (matchState) {
-					const newState = getNewStateFromInteraction(
+					const stateUpdateData = getNewStateFromInteraction(
 						{
 							player,
 							location: LOCATION.DESK,
@@ -66,6 +66,12 @@ export class Match extends MyMaid {
 						},
 						matchState
 					);
+					const { updated, newState } = stateUpdateData;
+					if (updated && newState) {
+						this.stores.setMatchStoreState(newState);
+					} else {
+						print("nothing to update probably print empty message ");
+					}
 				} else {
 					print("Warning there is no matchState ");
 				}

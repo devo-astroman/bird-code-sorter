@@ -5,6 +5,7 @@ import { Stores } from "shared/stores/stores.module";
 import { RoomGom } from "./room-gom.module";
 import { Match } from "shared/match/match.module";
 import { MyMaid } from "shared/maid/my-maid.module";
+import { getUserIdFromPlayerCharacter } from "shared/services/player-game-service.module";
 
 export class Room extends MyMaid {
 	private stores: Stores;
@@ -28,7 +29,8 @@ export class Room extends MyMaid {
 
 		this.gom.onPhaseFinished((id: ROOM_PHASE, data: Model[] | MATCH_FINISH) => {
 			if (id === ROOM_PHASE.PREMATCH) {
-				this.stores.setPlayersStoreState(data as Model[]);
+				const userIds = (data as Model[]).map((d) => getUserIdFromPlayerCharacter(d));
+				this.stores.setMatchStorePlayers(userIds);
 				this.stores.setRoomStoreState(ROOM_PHASE.MATCH);
 			} else if (id === ROOM_PHASE.MATCH) {
 				if (data === MATCH_FINISH.WIN) {

@@ -15,7 +15,7 @@ export const isPlayerUpperTorso = (possibleTorso: unknown) => {
 	return false;
 };
 
-function onCharacterAdded(character: Model) {
+export function onCharacterAdded(character: Model) {
 	//const player = Players.GetPlayerFromCharacter(character);
 	character.AddTag(PLAYER_CHARACTER_TAG);
 	setTagToChildNamed(character, PLAYER_UPPER_TORSO_TAG, "UpperTorso");
@@ -24,4 +24,14 @@ function onCharacterAdded(character: Model) {
 export function onPlayerAdded(player: Player) {
 	print("player added ", player.Name);
 	player.CharacterAdded.Connect(onCharacterAdded);
+}
+
+export function getUserIdFromPlayerCharacter(character: Model) {
+	const pS = game.GetService("Players");
+	const player = pS.GetPlayerFromCharacter(character);
+	if (!player) {
+		print("Warning there is no players in game, returning -1");
+		return -1;
+	}
+	return player.UserId;
 }
