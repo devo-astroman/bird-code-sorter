@@ -5,6 +5,7 @@ import { MyMaid } from "shared/maid/my-maid.module";
 import { SlotLine } from "./slot-line/slot-line.module";
 import { Stores } from "shared/stores/stores.module";
 import { getNewStateFromInteraction } from "shared/services/match-evaluator.module";
+import { PlayerHand } from "./player-hand/player-hand.module";
 
 export class Match extends MyMaid {
 	private clock: TimerService;
@@ -12,6 +13,7 @@ export class Match extends MyMaid {
 	private id: number;
 	private desk: SlotLine;
 	private stage: SlotLine;
+	private playersHand: PlayerHand[] = [];
 	private playerInteractionEvent: BindableEvent;
 	private finishedEvent: BindableEvent;
 	private stores: Stores;
@@ -31,7 +33,6 @@ export class Match extends MyMaid {
 		this.playerInteractionEvent = this.gom.getPlayerInteractionEvent();
 		this.finishedEvent = this.gom.getFinishedEvent();
 		this.gom.hideTime();
-		wait(5);
 
 		this.stores.getMatchStoreState$().connect((data) => {
 			if (data) {
@@ -39,6 +40,20 @@ export class Match extends MyMaid {
 				this.desk.setSlotValues(deskData);
 				const stageData = data.stage.map((s, i) => ({ id: i, value: s }));
 				this.stage.setSlotValues(stageData);
+				print("flag!!!");
+				data.handPlayers.forEach((hP) => {
+					const hPlayer = this.playersHand.find((playerH) => playerH.getUserId() === hP.userId);
+
+					if (hPlayer) {
+						//already exist
+						hPlayer.setHandValue(hP.handValue);
+					} else {
+						//we need to create it
+						const handPlayer = new PlayerHand(hP.userId);
+						handPlayer.setHandValue(hP.handValue);
+						this.playersHand.push(handPlayer);
+					}
+				});
 			}
 		});
 

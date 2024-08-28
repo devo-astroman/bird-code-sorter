@@ -61,3 +61,5 @@ export interface STATE_MODIFICACION_DATA {
 	updated: boolean;
 	newState: MATCH_STATE | undefined;
 }
+
+export const ATTACHMENT_WELD_NAME = "BirdStatue";

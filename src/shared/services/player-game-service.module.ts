@@ -35,3 +35,19 @@ export function getUserIdFromPlayerCharacter(character: Model) {
 	}
 	return player.UserId;
 }
+
+export function getCharacterFromUserId(userId: number) {
+	const pS = game.GetService("Players");
+	const player = pS.GetPlayerByUserId(userId);
+	if (player) {
+		if (player.Character) {
+			return player.Character;
+		} else {
+			print("Warning no character for userid ", userId);
+			return pS.CreateHumanoidModelFromUserId(userId);
+		}
+	} else {
+		print("Warning there is no player for user id ", userId);
+		return pS.CreateHumanoidModelFromUserId(userId);
+	}
+}
