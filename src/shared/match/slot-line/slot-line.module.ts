@@ -72,6 +72,12 @@ export class SlotLine extends MyMaid {
 		});
 	}
 
+	disableSlots() {
+		this.slotsData.forEach((sData) => {
+			sData.slot.disableSlot();
+		});
+	}
+
 	prepareMaid(): void {
 		this.addListToMaid([]);
 	}

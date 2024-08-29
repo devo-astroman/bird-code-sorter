@@ -39,6 +39,14 @@ export class RoomGom extends MyMaid {
 		this.connection = event.Event.Connect(cb);
 	}
 
+	getWinFolder() {
+		const winFolder = this.root.FindFirstChild("Win") as Folder;
+		if (!winFolder) {
+			print("Warning, not found ", "Win");
+		}
+		return winFolder;
+	}
+
 	prepareMaid(): void {
 		this.addListToMaid([this.connection]);
 	}

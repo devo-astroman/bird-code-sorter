@@ -32,6 +32,10 @@ export class Slot extends MyMaid {
 		return this.interactedEvent;
 	}
 
+	disableSlot() {
+		this.gom.disableProximityPrompt();
+	}
+
 	prepareMaid(): void {
 		this.addListToMaid([]);
 	}

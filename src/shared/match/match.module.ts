@@ -61,6 +61,11 @@ export class Match extends MyMaid {
 
 				if (nCorrects === this.stageGoal.size()) {
 					//fire  Won game
+					this.gom.hideTime();
+					this.desk.disableSlots();
+					this.stage.disableSlots();
+					this.phone.turnOffPhone();
+					this.clock.stop();
 					this.gom.playWinSound();
 					this.finishedEvent.Fire(MATCH_FINISH.WIN);
 				}
@@ -181,15 +186,11 @@ export class Match extends MyMaid {
 		});
 
 		this.clock.onTimeCompleted(() => {
+			this.clock.stop();
 			this.gom.hideTime();
 			//notify it is finished
 			this.finishedEvent.Fire(id, MATCH_FINISH.LOOSE);
 		});
-
-		/* to test the match store */
-		//wait(5);
-		//this.stores.setMatchStoreBirdLocation(BIRD_VALUE.GREEN, PLACE.HUMAN, 123);
-		/*  */
 	}
 
 	init() {

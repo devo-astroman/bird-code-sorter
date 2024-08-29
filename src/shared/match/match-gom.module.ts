@@ -1,4 +1,5 @@
 import { MyMaid } from "shared/maid/my-maid.module";
+import { displayInScreenList, hideScreenList, showScreenList } from "shared/services/screens-service.module";
 
 export class MatchGom extends MyMaid {
 	private root: Folder;
@@ -10,52 +11,21 @@ export class MatchGom extends MyMaid {
 	displaySecs(secs: number) {
 		const screensFolder = this.root.FindFirstChild("Screens", true) as Folder;
 		const parts = screensFolder.GetChildren() as Part[];
-		const textLabels = parts.map((p) => {
-			const tl = p.FindFirstChild("TextLabel", true) as TextLabel;
-			if (!tl) {
-				print("warning not TextLabel found ", tl);
-			}
-
-			return tl;
-		}) as TextLabel[];
-
-		textLabels.forEach((tl) => {
-			tl.Text = secs + "";
-		});
+		displayInScreenList(parts, secs + "");
 	}
 
 	hideTime() {
 		const screensFolder = this.root.FindFirstChild("Screens", true) as Folder;
-		const parts = screensFolder.GetChildren() as Part[];
-		const surfaceGuis = parts.map((p) => {
-			const sg = p.FindFirstChild("SurfaceGui", true) as SurfaceGui;
-			if (!sg) {
-				print("warning not SurfaceGui found ", sg);
-			}
+		const screenParts = screensFolder.GetChildren() as Part[];
 
-			return sg;
-		}) as SurfaceGui[];
-
-		surfaceGuis.forEach((sg) => {
-			sg.Enabled = false;
-		});
+		hideScreenList(screenParts);
 	}
 
 	showTime() {
 		const screensFolder = this.root.FindFirstChild("Screens", true) as Folder;
-		const parts = screensFolder.GetChildren() as Part[];
-		const surfaceGuis = parts.map((p) => {
-			const sg = p.FindFirstChild("SurfaceGui", true) as SurfaceGui;
-			if (!sg) {
-				print("warning not SurfaceGui found ", sg);
-			}
+		const screenParts = screensFolder.GetChildren() as Part[];
 
-			return sg;
-		}) as SurfaceGui[];
-
-		surfaceGuis.forEach((sg) => {
-			sg.Enabled = true;
-		});
+		showScreenList(screenParts);
 	}
 
 	openMatch() {

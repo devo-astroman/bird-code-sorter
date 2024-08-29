@@ -7,6 +7,7 @@ import { Match } from "shared/match/match.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { getUserIdFromPlayerCharacter } from "shared/services/player-game-service.module";
 import { Loose } from "shared/loose/loose.module";
+import { Win } from "shared/win/win.module";
 
 export class Room extends MyMaid {
 	private stores: Stores;
@@ -17,6 +18,7 @@ export class Room extends MyMaid {
 
 	private preMatch!: Prematch;
 	private match!: Match;
+	private win!: Win;
 	private loose!: Loose;
 
 	private phaseFinishedEvent: BindableEvent;
@@ -72,6 +74,9 @@ export class Room extends MyMaid {
 			});
 		}
 
+		const winFolder = this.gom.getWinFolder();
+		this.win = new Win(0, this.stores, winFolder);
+
 		this.loose = new Loose(0, this.stores);
 		print("before prepareMaid");
 		this.prepareMaid();
@@ -90,6 +95,7 @@ export class Room extends MyMaid {
 					this.match.init();
 				} else if (phase === ROOM_PHASE.WIN) {
 					print("win");
+					this.win.init();
 				} else if (phase === ROOM_PHASE.LOOSE) {
 					print("loose");
 					//this.match.Destroy(); //

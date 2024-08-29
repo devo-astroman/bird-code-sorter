@@ -57,6 +57,24 @@ export class SlotGom extends MyMaid {
 		}
 	}
 
+	disableProximityPrompt() {
+		const proximityPrompt = this.root.FindFirstChild("ProximityPrompt") as ProximityPrompt;
+		if (!proximityPrompt) {
+			print("Warning no found ", "ProximityPrompt");
+		}
+
+		proximityPrompt.Enabled = false;
+	}
+
+	enableProximityPrompt() {
+		const proximityPrompt = this.root.FindFirstChild("ProximityPrompt") as ProximityPrompt;
+		if (!proximityPrompt) {
+			print("Warning no found ", "ProximityPrompt");
+		}
+
+		proximityPrompt.Enabled = true;
+	}
+
 	prepareMaid(): void {
 		this.addListToMaid([this.connection]);
 	}
