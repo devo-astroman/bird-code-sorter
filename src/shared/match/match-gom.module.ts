@@ -109,6 +109,12 @@ export class MatchGom extends MyMaid {
 		return phoneFolder;
 	}
 
+	playWinSound() {
+		const winSound = this.root.FindFirstChild("GoodAnswer") as Sound;
+		if (!winSound) print("Warning, not found ", "GoodAnswer");
+		winSound.Play();
+	}
+
 	prepareMaid(): void {
 		//nothing to add
 	}

@@ -61,6 +61,7 @@ export class Match extends MyMaid {
 
 				if (nCorrects === this.stageGoal.size()) {
 					//fire  Won game
+					this.gom.playWinSound();
 					this.finishedEvent.Fire(MATCH_FINISH.WIN);
 				}
 			}
