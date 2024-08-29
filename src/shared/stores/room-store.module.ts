@@ -8,7 +8,6 @@ export class RoomStore extends MyMaid {
 
 	constructor() {
 		super();
-		print("player store");
 		this.state.observe(this.phase$);
 	}
 
@@ -22,6 +21,6 @@ export class RoomStore extends MyMaid {
 
 	prepareMaid(): void {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		this.addListToMaid([this.phase$, this.state as any]);
+		//this.addListToMaid([this.phase$, this.state as any]);
 	}
 }

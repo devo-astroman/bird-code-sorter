@@ -8,7 +8,7 @@ export class TimerService extends MyMaid {
 	private promiseFn!: (
 		resolve: (value: unknown) => void,
 		reject: (reason?: unknown) => void,
-		onCancel: (abortHandler?: (() => void) | undefined) => boolean,
+		onCancel: (abortHandler?: (() => void) | undefined) => boolean
 	) => void;
 	private activePromise!: Promise<unknown> | undefined;
 	private cancelPromise = false;
@@ -72,6 +72,6 @@ export class TimerService extends MyMaid {
 	}
 
 	prepareMaid(): void {
-		this.addListToMaid([this.activePromise as any]);
+		//this.addListToMaid([this.activePromise as any]);
 	}
 }

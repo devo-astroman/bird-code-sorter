@@ -26,6 +26,8 @@ export class Match extends MyMaid {
 	private finishedEvent: BindableEvent;
 	private stores: Stores;
 
+	private connections: RBXScriptConnection[] = [];
+
 	//move connection to gom
 	constructor(id: number, instance: Instance, stores: Stores) {
 		super();
@@ -46,7 +48,7 @@ export class Match extends MyMaid {
 		const phoneFolder = this.gom.getPhoneFolder();
 		this.phone = new Phone(phoneFolder);
 
-		this.phone.getClickedBindableEvent().Event.Connect(() => {
+		const conn1 = this.phone.getClickedBindableEvent().Event.Connect(() => {
 			const stageValues = this.stores.getMatchStoreState()?.stage;
 
 			if (!stageValues) {
@@ -72,7 +74,7 @@ export class Match extends MyMaid {
 			}
 		});
 
-		this.stores.getMatchStoreState$().connect((data) => {
+		const conn2 = this.stores.getMatchStoreState$().connect((data) => {
 			if (data) {
 				const deskData = data.desk.map((d, i) => ({ id: i, value: d }));
 				this.desk.setSlotValues(deskData);
@@ -105,11 +107,24 @@ export class Match extends MyMaid {
 
 		const deskFolder = this.gom.getDeskFolder();
 		this.desk = new SlotLine(LOCATION.DESK, deskFolder);
+		if (this.stores) {
+			const state = this.stores.getMatchStoreState();
+			if (state) {
+				this.desk.init(state.desk.map((val, i) => ({ id: i, value: val })));
+			}
+		}
+
 		const stageFolder = this.gom.getStageFolder();
 		this.stage = new SlotLine(LOCATION.STAGE, stageFolder);
+		if (this.stores) {
+			const state = this.stores.getMatchStoreState();
+			if (state) {
+				this.stage.init(state.stage.map((val, i) => ({ id: i, value: val })));
+			}
+		}
 
 		///to test
-		this.desk
+		const conn3 = this.desk
 			.getChangeEvent()
 			.Event.Connect((interactionData: { player: Player; idSlot: ID_SLOTS; slotValue: SLOT_VALUE }, deskData) => {
 				print("monitor: interaction data", interactionData);
@@ -143,7 +158,7 @@ export class Match extends MyMaid {
 				}
 			});
 
-		this.stage
+		const conn4 = this.stage
 			.getChangeEvent()
 			.Event.Connect(
 				(interactionData: { player: Player; idSlot: ID_SLOTS; slotValue: SLOT_VALUE }, stageData) => {
@@ -179,6 +194,12 @@ export class Match extends MyMaid {
 				}
 			);
 
+		//Improve
+		this.connections.push(conn1);
+		this.connections.push(conn2);
+		this.connections.push(conn3);
+		this.connections.push(conn4);
+
 		///
 
 		this.clock.onOneSecComplementDo((sec: number) => {
@@ -212,6 +233,8 @@ export class Match extends MyMaid {
 	}
 
 	prepareMaid(): void {
+		//improve all the connections
+		this.connections.forEach((conn) => conn.Disconnect());
 		this.addListToMaid([this.clock, this.gom, this.phone, this.desk, this.stage]);
 	}
 }

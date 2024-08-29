@@ -1,4 +1,4 @@
-import { MATCH_STATE } from "./stores/match-store-.module";
+import { MATCH_STATE } from "./stores/match-store.module";
 
 export const ROOM_TAG = "ROOM_TAG";
 export const PLAYER_STORE_TAG = "PLAYER_STORE_TAG";
@@ -53,9 +53,9 @@ export const SLOT_VALUE_COLORS = [
 	new Color3(0.502, 0, 0.502) //PURPLE
 ];
 
-export const PREMATCH_TIME = 5; //15
+export const PREMATCH_TIME = 3; //15
 export const MATCH_TIME = 120; //60
-export const RESET_TIME = 5; //5
+export const RESET_TIME = 3; //5
 
 export const PLAYER_JUMP_HEIGHT = 7.2;
 

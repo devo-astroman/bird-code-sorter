@@ -1,8 +1,7 @@
 import Maid from "@rbxts/maid";
 
 export abstract class MyMaid {
-	protected maid: Maid = new Maid();
-
+	private maid: Maid = new Maid();
 	abstract prepareMaid(): void;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

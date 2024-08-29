@@ -76,6 +76,7 @@ export class SlotGom extends MyMaid {
 	}
 
 	prepareMaid(): void {
-		this.addListToMaid([this.connection]);
+		//this.addListToMaid([this.connection]);
+		this.connection.Disconnect();
 	}
 }

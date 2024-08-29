@@ -6,7 +6,7 @@ import {
 	SLOTS_DESK_INITIAL_VALUES,
 	STATE_MODIFICACION_DATA
 } from "shared/constants.module";
-import { MATCH_STATE } from "shared/stores/match-store-.module";
+import { MATCH_STATE } from "shared/stores/match-store.module";
 import { fromIdSlotToIndex } from "./slot-service.module";
 
 export const getNewStateFromInteraction = (

@@ -14,24 +14,25 @@ export class SlotLine extends MyMaid {
 		slot: Slot;
 	}[] = [];
 
+	private connectionList: RBXScriptConnection[] = [];
+
 	constructor(id: number, instance: Instance) {
 		super();
-		print("SlotLine --- ");
 		this.id = id;
 		this.gom = new SlotLineGom(instance as Folder);
 		this.changeEvent = this.gom.getChangeEvent();
+	}
+
+	init(newSlotsData: { id: ID_SLOTS; value: SLOT_VALUE }[]) {
 		const slotParts = this.gom.getSlotParts();
 
 		slotParts.forEach((sPart, i) => {
-			const initValue = SLOT_VALUE.EMPTY;
+			const initValue = newSlotsData[i].value;
 			const idSlot = fromIndexToIdSlot(i);
-			const slot = new Slot(idSlot, sPart, SLOT_VALUE.EMPTY);
-			slot.getInteracted().Event.Connect((player, id, value) => {
-				slot.setValue(SLOT_VALUE.BLUE); //to test!! the value depends on the players hand
+			const slot = new Slot(idSlot, sPart, initValue);
 
+			const conn = slot.getInteracted().Event.Connect((player, id, value) => {
 				const interactionData = { player, idSlot: id, slotValue: value };
-				this.setSlotValue(id, SLOT_VALUE.BLUE);
-
 				this.changeEvent.Fire(interactionData, this.slotsData);
 			});
 			const sData = {
@@ -40,11 +41,11 @@ export class SlotLine extends MyMaid {
 				slot
 			};
 
+			this.connectionList.push(conn);
+
 			this.slotsData.push(sData);
 		});
 	}
-
-	init() {}
 
 	getChangeEvent() {
 		return this.changeEvent;
@@ -85,6 +86,7 @@ export class SlotLine extends MyMaid {
 	}
 
 	prepareMaid(): void {
+		this.connectionList.forEach((conn) => conn.Disconnect()); //continue here
 		const maidList: (SlotLineGom | Slot)[] = [this.gom];
 		this.slotsData.forEach((sData) => {
 			maidList.push(sData.slot);

@@ -44,6 +44,6 @@ export class PlayerStore extends MyMaid {
 	}
 
 	prepareMaid(): void {
-		this.addListToMaid([this.playerCharacters$, this.state as any]);
+		//this.addListToMaid([this.playerCharacters$, this.state]);
 	}
 }
