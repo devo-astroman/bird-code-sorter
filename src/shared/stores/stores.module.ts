@@ -47,6 +47,14 @@ export class Stores extends MyMaid {
 		return this.matchStore.getValue();
 	}
 
+	getPlayersInMatchStoreState() {
+		const matchState = this.matchStore.getValue();
+
+		if (!matchState) return [];
+
+		return matchState.handPlayers.map((hP) => hP.userId);
+	}
+
 	setMatchStorePlayers(playersUserId: number[]) {
 		this.matchStore.setPlayersUserId(playersUserId);
 	}

@@ -6,6 +6,7 @@ import {
 	hideScreenList,
 	showScreenList
 } from "shared/services/screens-service.module";
+import { teleportPlayersToPoints } from "shared/services/teleporter-service.module";
 
 export class WinGom extends MyMaid {
 	private root: Folder;
@@ -47,6 +48,13 @@ export class WinGom extends MyMaid {
 		const screensFolder = screensValue.Value as Folder;
 		const parts = screensFolder.GetChildren() as Part[];
 		showScreenList(parts);
+	}
+
+	teleportToWinPlaces(characterList: Model[]) {
+		const winnersPlace = this.root.FindFirstChild("WinnersPlace") as Folder;
+		if (!winnersPlace) print("Warning not found", "WinnersPlace");
+		const places = winnersPlace.GetChildren() as Part[];
+		teleportPlayersToPoints(characterList, places);
 	}
 
 	prepareMaid(): void {
