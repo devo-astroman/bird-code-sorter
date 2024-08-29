@@ -1,6 +1,9 @@
-export class PrematchGom {
+import { MyMaid } from "shared/maid/my-maid.module";
+
+export class PrematchGom extends MyMaid {
 	private root: Folder;
 	constructor(root: Folder) {
+		super();
 		this.root = root;
 	}
 
@@ -14,6 +17,12 @@ export class PrematchGom {
 		const door1 = this.root.FindFirstChild("Door1", true) as MeshPart;
 		door1.CanCollide = false;
 		door1.Transparency = 1;
+
+		const door2Value = this.root.FindFirstChild("Door2Value", true) as ObjectValue;
+		if (!door2Value) print("Warning not found", "Door2Value");
+		const door2 = door2Value.Value as Part;
+		door2.CanCollide = true;
+		door2.Transparency = 0;
 	}
 
 	closePrematch() {
@@ -41,7 +50,5 @@ export class PrematchGom {
 		billboardToStartGui.Enabled = true;
 	}
 
-	Destroy() {
-		//
-	}
+	prepareMaid(): void {}
 }

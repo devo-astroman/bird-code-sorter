@@ -58,9 +58,4 @@ export class Prematch extends MyMaid {
 	prepareMaid(): void {
 		this.addListToMaid([this.clock, this.gom, this.zone]);
 	}
-
-	Destroy() {
-		this.zone.Destroy();
-		print("Prematch.destroy");
-	}
 }

@@ -60,6 +60,6 @@ export class Stores extends MyMaid {
 	}
 
 	prepareMaid(): void {
-		this.addListToMaid([this.roomStore, this.playerStore]);
+		this.addListToMaid([this.roomStore, this.playerStore, this.matchStore]);
 	}
 }

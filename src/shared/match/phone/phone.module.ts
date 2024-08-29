@@ -32,5 +32,7 @@ export class Phone extends MyMaid {
 		return this.clicked;
 	}
 
-	prepareMaid(): void {}
+	prepareMaid(): void {
+		this.addListToMaid([this.gom]);
+	}
 }

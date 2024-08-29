@@ -3,6 +3,7 @@ import { MyMaid } from "shared/maid/my-maid.module";
 
 export class PhoneGom extends MyMaid {
 	private root;
+	private connection!: RBXScriptConnection;
 	constructor(root: Folder) {
 		super();
 		this.root = root;
@@ -26,7 +27,7 @@ export class PhoneGom extends MyMaid {
 
 	connectOnTrigger(cb: (player: Player) => void) {
 		const proximityPrompt = this.root.FindFirstChild("ProximityPrompt", true) as ProximityPrompt;
-		proximityPrompt.Triggered.Connect(cb);
+		this.connection = proximityPrompt.Triggered.Connect(cb);
 	}
 
 	playWrackSoundNTimes(nTimes: number) {
@@ -50,6 +51,6 @@ export class PhoneGom extends MyMaid {
 	}
 
 	prepareMaid(): void {
-		//this.addListToMaid();
+		this.addListToMaid([this.connection]);
 	}
 }

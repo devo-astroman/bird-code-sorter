@@ -11,6 +11,7 @@ export class Win extends MyMaid {
 	private stores: Stores;
 	private clock: TimerService;
 	private root: Folder;
+	private finishedEvent!: BindableEvent;
 
 	constructor(id: number, stores: Stores, root: Folder) {
 		super();
@@ -18,6 +19,7 @@ export class Win extends MyMaid {
 		this.stores = stores;
 		this.root = root;
 		this.gom = new WinGom(root);
+		this.finishedEvent = this.gom.getFinishedEvent();
 		this.clock = new TimerService();
 		this.clock.onOneSecComplementDo((sec: number) => {
 			this.gom.displayResetTime(sec);
@@ -30,6 +32,8 @@ export class Win extends MyMaid {
 			const characterModels = userIds.map((uId) => getCharacterFromUserId(uId));
 
 			this.gom.teleportToWinPlaces(characterModels);
+			this.finishedEvent = this.gom.getFinishedEvent();
+			this.finishedEvent.Fire();
 			//notify win is finished
 		});
 		print("Win! --- ");
@@ -45,7 +49,11 @@ export class Win extends MyMaid {
 		this.clock.startTime(RESET_TIME);
 	}
 
+	getFinishedEvent() {
+		return this.finishedEvent;
+	}
+
 	prepareMaid(): void {
-		this.addListToMaid([]);
+		this.addListToMaid([this.gom, this.clock]);
 	}
 }

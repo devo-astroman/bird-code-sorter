@@ -1,10 +1,8 @@
-import { SLOT_VALUE } from "shared/constants.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { Stores } from "shared/stores/stores.module";
 import { LooseGom } from "./loose-gom.module";
 
 export class Loose extends MyMaid {
-	private value!: SLOT_VALUE;
 	private id: number;
 	private gom!: LooseGom;
 	private stores: Stores;
@@ -32,6 +30,6 @@ export class Loose extends MyMaid {
 	}
 
 	prepareMaid(): void {
-		this.addListToMaid([]);
+		this.addListToMaid([this.gom]);
 	}
 }

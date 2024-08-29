@@ -72,6 +72,12 @@ export class SlotLine extends MyMaid {
 		});
 	}
 
+	enableSlots() {
+		this.slotsData.forEach((sData) => {
+			sData.slot.enableSlot();
+		});
+	}
+
 	disableSlots() {
 		this.slotsData.forEach((sData) => {
 			sData.slot.disableSlot();
@@ -79,6 +85,11 @@ export class SlotLine extends MyMaid {
 	}
 
 	prepareMaid(): void {
-		this.addListToMaid([]);
+		const maidList: (SlotLineGom | Slot)[] = [this.gom];
+		this.slotsData.forEach((sData) => {
+			maidList.push(sData.slot);
+		});
+
+		this.addListToMaid(maidList);
 	}
 }

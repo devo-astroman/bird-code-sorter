@@ -21,15 +21,21 @@ export class Room extends MyMaid {
 	private win!: Win;
 	private loose!: Loose;
 
+	private resetEvent: BindableEvent;
 	private phaseFinishedEvent: BindableEvent;
+	private instace: Folder;
+
+	private connection!: RBXScriptConnection;
 	constructor(instance: Instance) {
 		super();
 		print("- Room -");
+		this.instace = instance as Folder;
 		this.stores = new Stores();
 		this.gom = new RoomGom(instance);
 		this.room$ = this.stores.getRoomStoreState$();
 		this.players$ = this.stores.getPlayerStoreState$();
 		this.phaseFinishedEvent = this.gom.getPhaseFinishedEvent();
+		this.resetEvent = this.gom.getResetEvent();
 
 		this.gom.onPhaseFinished((id: ROOM_PHASE, data: Model[] | MATCH_FINISH) => {
 			if (id === ROOM_PHASE.PREMATCH) {
@@ -76,6 +82,10 @@ export class Room extends MyMaid {
 
 		const winFolder = this.gom.getWinFolder();
 		this.win = new Win(0, this.stores, winFolder);
+		this.win.getFinishedEvent().Event.Connect(() => {
+			//this.stores.setRoomStoreState(ROOM_PHASE.PREMATCH);
+			this.resetEvent.Fire();
+		});
 
 		this.loose = new Loose(0, this.stores);
 		print("before prepareMaid");
@@ -98,9 +108,7 @@ export class Room extends MyMaid {
 					this.win.init();
 				} else if (phase === ROOM_PHASE.LOOSE) {
 					print("loose");
-					//this.match.Destroy(); //
-
-					//loop through all the players and explote them
+					this.loose.init();
 					this.loose.killPlayers();
 				}
 			}
@@ -109,7 +117,19 @@ export class Room extends MyMaid {
 		this.stores.setRoomStoreState(ROOM_PHASE.PREMATCH);
 	}
 
+	getResetEvent() {
+		return this.resetEvent;
+	}
+
+	onResetEvent(cb: () => void) {
+		this.connection = this.resetEvent.Event.Connect(cb);
+	}
+
+	getRootInstace() {
+		return this.instace;
+	}
+
 	prepareMaid() {
-		this.addListToMaid([this.stores, this.gom, this.preMatch, this.match]);
+		this.addListToMaid([this.stores, this.gom, this.preMatch, this.match, this.win, this.loose, this.connection]);
 	}
 }

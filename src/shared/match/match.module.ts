@@ -195,6 +195,9 @@ export class Match extends MyMaid {
 
 	init() {
 		print("match.init");
+		this.desk.enableSlots();
+		this.stage.enableSlots();
+		this.phone.turnOffPhone();
 		this.clock.startTime(MATCH_TIME);
 		this.gom.showTime();
 		this.gom.openMatch();

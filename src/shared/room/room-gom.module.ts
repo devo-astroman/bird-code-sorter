@@ -26,6 +26,14 @@ export class RoomGom extends MyMaid {
 		return matchFolder;
 	}
 
+	getResetEvent() {
+		const event = this.root.FindFirstChild("ResetEvent");
+		if (!event) {
+			print("Warning, not found ", "ResetEvent");
+		}
+		return event as BindableEvent;
+	}
+
 	getPhaseFinishedEvent() {
 		const event = this.root.FindFirstChild("PhaseFinishedEvent");
 		if (!event) {
