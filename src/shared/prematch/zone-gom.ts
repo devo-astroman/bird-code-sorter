@@ -14,15 +14,6 @@ export class ZoneGom extends MyMaid {
 
 	triggerOnPlayerEnter(fn: (playerCharacter: Model) => void) {
 		const zonePart = this.part;
-
-		/* this.connectionEnter = zonePart.Touched.Connect((touchedPart: BasePart) => {
-			if (isPlayerUpperTorso(touchedPart)) {
-				const playerCharacter = touchedPart.Parent as Model;
-
-				fn(playerCharacter);
-			}
-		}); */
-
 		this.connectionEnter = this.maidConnection(zonePart.Touched, (touchedPart: BasePart) => {
 			if (isPlayerUpperTorso(touchedPart)) {
 				const playerCharacter = touchedPart.Parent as Model;
@@ -32,25 +23,11 @@ export class ZoneGom extends MyMaid {
 		});
 	}
 	removeTriggerOnPlayerEnter() {
-		//this.connectionEnter.Disconnect();
 		this.maidDestroyConnection(this.connectionEnter);
 	}
 
-	/* triggerOnPlayerExit(fn: (playerCharacter: Model) => void) {
-		const zonePart = this.part;
-
-		this.connectionExit = zonePart.TouchEnded.Connect((touchedPart: BasePart) => {
-			if (isPlayerUpperTorso(touchedPart)) {
-				const playerCharacter = touchedPart.Parent as Model;
-
-				fn(playerCharacter);
-			}
-		});
-	} */
 	triggerOnPlayerExit(fn: (playerCharacter: Model) => void) {
 		const zonePart = this.part;
-
-		// Replace direct Connect call with maidConnection
 		this.connectionExit = this.maidConnection(zonePart.TouchEnded, (touchedPart: BasePart) => {
 			if (isPlayerUpperTorso(touchedPart)) {
 				const playerCharacter = touchedPart.Parent as Model;
@@ -63,15 +40,6 @@ export class ZoneGom extends MyMaid {
 		this.connectionExit.Disconnect();
 	}
 
-	/* blockPlayerJump(character: Model) {
-		const humanoid = character.FindFirstChild("Humanoid") as Humanoid;
-		humanoid.JumpHeight = 0;
-	}
-
-	allowPlayerJump(character: Model) {
-		const humanoid = character.FindFirstChild("Humanoid") as Humanoid;
-		humanoid.JumpHeight = PLAYER_JUMP_HEIGHT;
-	} */
 	blockPlayerJump(character: Model) {
 		const humanoid = findElement<Humanoid>(character, "Humanoid");
 		humanoid.JumpHeight = 0;

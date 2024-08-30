@@ -11,9 +11,7 @@ export class Prematch extends MyMaid {
 		this.id = id;
 
 		this.gom = new PrematchGom(instance as Folder);
-
 		this.gom.hideTimer();
-
 		this.gom.createZone(
 			() => {
 				this.gom.startTimer();

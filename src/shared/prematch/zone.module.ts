@@ -2,7 +2,6 @@ import { MyMaid } from "shared/maid/my-maid.module";
 import { ZoneGom } from "./zone-gom";
 
 export class Zone extends MyMaid {
-	private zonePart: Part;
 	private gom: ZoneGom;
 	private playersInside: Model[] = [];
 	private onFirstPlayerEnterFn: () => void;
@@ -12,7 +11,6 @@ export class Zone extends MyMaid {
 		super();
 		this.onFirstPlayerEnterFn = onFirstPlayerEnterFn;
 		this.onLastPlayerExitFn = onLastPlayerExitFn;
-		this.zonePart = zonePart;
 		this.gom = new ZoneGom(zonePart);
 	}
 	init() {
