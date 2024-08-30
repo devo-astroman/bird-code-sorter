@@ -1,28 +1,28 @@
+import { PREMATCH_TIME } from "shared/constants.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { findElement } from "shared/services/gom-service.module";
+import { TimerService } from "shared/services/timer-service.module";
+import { Zone } from "./zone.module";
 
 export class PrematchGom extends MyMaid {
 	private root: Folder;
+	private clock!: TimerService;
+	private zone!: Zone;
 	constructor(root: Folder) {
 		super();
 		this.root = root;
 	}
 
 	getPrematchZonePart() {
-		/* const zone = this.root.FindFirstChild("ZonePart", true);
-		if (!zone) print("Warning not found child ", zone);
-		return zone as Part; */
 		const zone = findElement<Part>(this.root, "ZonePart");
 		return zone;
 	}
 
 	openPrematch() {
-		//const door1 = this.root.FindFirstChild("Door1", true) as MeshPart;
 		const door1 = findElement<MeshPart>(this.root, "Door1");
 		door1.CanCollide = false;
 		door1.Transparency = 1;
 
-		//const door2Value = this.root.FindFirstChild("Door2Value", true) as ObjectValue;
 		const door2Value = findElement<ObjectValue>(this.root, "Door2Value");
 		const door2 = door2Value.Value as Part;
 		door2.CanCollide = true;
@@ -30,27 +30,16 @@ export class PrematchGom extends MyMaid {
 	}
 
 	closePrematch() {
-		//const door1 = this.root.FindFirstChild("Door1", true) as MeshPart;
 		const door1 = findElement<MeshPart>(this.root, "Door1");
 		door1.CanCollide = true;
 		door1.Transparency = 0;
 	}
 
-	/* 	displaySecs(sec: number) {
-		const secsTextLabel = this.root.FindFirstChild("SecsTextLabel", true) as TextLabel;
-		secsTextLabel.Text = sec + "";
-	} */
 	displaySecs(sec: number) {
 		const secsTextLabel = findElement<TextLabel>(this.root, "SecsTextLabel");
 		secsTextLabel.Text = sec + "";
 	}
 
-	/* 	hideTimer() {
-		const billboardGui = this.root.FindFirstChild("BillboardGui", true) as BillboardGui;
-		billboardGui.Enabled = false;
-		const billboardToStartGui = this.root.FindFirstChild("BillboardToStartGui", true) as BillboardGui;
-		billboardToStartGui.Enabled = false;
-	} */
 	hideTimer() {
 		const billboardGui = findElement<BillboardGui>(this.root, "BillboardGui");
 		billboardGui.Enabled = false;
@@ -59,12 +48,6 @@ export class PrematchGom extends MyMaid {
 		billboardToStartGui.Enabled = false;
 	}
 
-	/* 	showTimer() {
-		const billboardGui = this.root.FindFirstChild("BillboardGui", true) as BillboardGui;
-		billboardGui.Enabled = true;
-		const billboardToStartGui = this.root.FindFirstChild("BillboardToStartGui", true) as BillboardGui;
-		billboardToStartGui.Enabled = true;
-	} */
 	showTimer() {
 		const billboardGui = findElement<BillboardGui>(this.root, "BillboardGui");
 		billboardGui.Enabled = true;
@@ -73,24 +56,62 @@ export class PrematchGom extends MyMaid {
 		billboardToStartGui.Enabled = true;
 	}
 
-	/* 	getFinishedEvent() {
-		const finishedEvent = this.root.FindFirstChild("FinishedEvent") as BindableEvent;
-		if (!finishedEvent) {
-			print("Warning not found ", "FinishedEvent");
-		}
-
-		return finishedEvent;
-	} */
 	getFinishedEvent() {
 		const finishedEvent = findElement<BindableEvent>(this.root, "FinishedEvent");
 		return finishedEvent;
 	}
 
-	fireFinishedEvent(players: Model[]) {
+	fireFinishedEvent() {
+		const players = this.getPlayersInZone();
 		const finishedEvent = this.getFinishedEvent();
 
 		finishedEvent.Fire(players);
 	}
 
-	prepareMaid(): void {}
+	createTimer() {
+		if (!this.clock) this.clock = new TimerService();
+	}
+
+	startTimer() {
+		this.createTimer();
+		this.clock.startTime(PREMATCH_TIME);
+		this.showTimer();
+	}
+
+	stopTimer() {
+		this.createTimer();
+		this.clock.stop();
+		this.hideTimer();
+	}
+
+	onOneSecTimer(cb: (sec: number) => void) {
+		this.createTimer();
+		this.clock.onOneSecComplementDo(cb);
+	}
+
+	onTimerCompleted(cb: () => void) {
+		this.createTimer();
+		this.clock.onTimeCompleted(cb);
+	}
+
+	createZone(cb1: () => void, cb2: () => void) {
+		const zonePart = this.getPrematchZonePart();
+		this.zone = new Zone(zonePart, cb1, cb2);
+	}
+
+	initZone() {
+		this.zone.init();
+	}
+
+	endZone() {
+		this.zone.end();
+	}
+
+	getPlayersInZone() {
+		return this.zone.getPlayersInZone();
+	}
+
+	prepareMaid(): void {
+		this.addListToMaid([this.clock, this.zone]);
+	}
 }
