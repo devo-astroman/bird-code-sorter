@@ -24,7 +24,7 @@ export class Room extends MyMaid {
 	private phaseFinishedEvent: BindableEvent;
 
 	private connection!: RBXScriptConnection;
-	private connections!: RBXScriptConnection[];
+	private connections: RBXScriptConnection[] = [];
 	constructor(instance: Instance) {
 		super();
 		print("- Room -");
