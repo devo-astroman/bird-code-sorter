@@ -1,27 +1,18 @@
-import { ID_SLOTS, LOCATION, MATCH_FINISH, MATCH_TIME, SLOT_VALUE } from "shared/constants.module";
-import { TimerService } from "shared/services/timer-service.module";
+import { ID_SLOTS, LOCATION, MATCH_FINISH, SLOT_VALUE } from "shared/constants.module";
 import { MatchGom } from "./match-gom.module";
 import { MyMaid } from "shared/maid/my-maid.module";
-import { SlotLine } from "./slot-line/slot-line.module";
 import { Stores } from "shared/stores/stores.module";
 import {
 	countSamePositions,
 	generateGoalCombination,
-	getNewStateFromInteraction
+	compareNewStateWithCurrentState
 } from "shared/services/match-evaluator.module";
-import { PlayerHand } from "./player-hand/player-hand.module";
-import { Phone } from "./phone/phone.module";
 import { printSlotInString } from "shared/services/slot-service.module";
 
 export class Match extends MyMaid {
-	private clock: TimerService;
 	private gom: MatchGom;
 	private id: number;
-	private desk: SlotLine;
-	private stage: SlotLine;
 	private stageGoal: SLOT_VALUE[];
-	private phone: Phone;
-	private playersHand: PlayerHand[] = [];
 	private playerInteractionEvent: BindableEvent;
 	private finishedEvent: BindableEvent;
 	private stores: Stores;
@@ -35,180 +26,114 @@ export class Match extends MyMaid {
 		this.stores = stores;
 		this.stageGoal = generateGoalCombination();
 		print("Match --- ");
-
-		/* 
-		setup desk, stage and phone
-		 */
-		this.clock = new TimerService();
 		this.gom = new MatchGom(instance as Folder);
 		this.playerInteractionEvent = this.gom.getPlayerInteractionEvent();
 		this.finishedEvent = this.gom.getFinishedEvent();
-		this.gom.hideTime();
+		this.gom.hideTimer();
+		this.gom.createPhone();
+		this.gom.onPhoneInteraction(() => {
+			const stageValues = this.gom.getStageValues(this.stores);
+			print("stageValues ");
+			printSlotInString(stageValues);
+			print("stageGoal ");
+			printSlotInString(this.stageGoal);
+			const nCorrects = countSamePositions(stageValues, this.stageGoal);
 
-		const phoneFolder = this.gom.getPhoneFolder();
-		this.phone = new Phone(phoneFolder);
+			this.gom.playSoundNTimes(nCorrects);
 
-		const conn1 = this.phone.getClickedBindableEvent().Event.Connect(() => {
-			const stageValues = this.stores.getMatchStoreState()?.stage;
+			if (nCorrects === this.stageGoal.size()) {
+				//fire  Won game
+				this.gom.stopTimer();
+				this.gom.disableDeskSlots();
+				this.gom.disableStageSlots();
+				this.gom.turnOffPhone();
+				this.gom.playWinSound();
+				this.finishedEvent.Fire(MATCH_FINISH.WIN);
+			}
+		});
 
-			if (!stageValues) {
-				print("Warning there is no stageValues");
+		this.gom.onMatchStateChange(this.stores, (data) => {
+			//update desk
+			const deskData = data.desk.map((d, i) => ({ id: i, value: d }));
+			this.gom.setDeskValues(deskData);
+
+			//update update stage
+			const stageData = data.stage.map((s, i) => ({ id: i, value: s }));
+			this.gom.setStageValues(stageData);
+
+			//update players hand
+			this.gom.updateHandPlayers(data.handPlayers);
+
+			//update phone
+			const existSomeEmptySlot = stageData.some((sData) => sData.value === SLOT_VALUE.EMPTY);
+			if (existSomeEmptySlot) {
+				this.gom.turnOffPhone();
 			} else {
-				print("stageValues ");
-				printSlotInString(stageValues);
-				print("stageGoal ");
-				printSlotInString(this.stageGoal);
-				const nCorrects = countSamePositions(stageValues, this.stageGoal);
-				this.phone.playSoundNTimes(nCorrects);
-
-				if (nCorrects === this.stageGoal.size()) {
-					//fire  Won game
-					this.gom.hideTime();
-					this.desk.disableSlots();
-					this.stage.disableSlots();
-					this.phone.turnOffPhone();
-					this.clock.stop();
-					this.gom.playWinSound();
-					this.finishedEvent.Fire(MATCH_FINISH.WIN);
-				}
+				this.gom.turnOnPhone();
 			}
 		});
 
-		const conn2 = this.stores.getMatchStoreState$().connect((data) => {
-			if (data) {
-				const deskData = data.desk.map((d, i) => ({ id: i, value: d }));
-				this.desk.setSlotValues(deskData);
-				const stageData = data.stage.map((s, i) => ({ id: i, value: s }));
-				this.stage.setSlotValues(stageData);
+		this.gom.createDesk();
+		this.gom.initDeskState(this.stores);
 
-				data.handPlayers.forEach((hP) => {
-					const hPlayer = this.playersHand.find((playerH) => playerH.getUserId() === hP.userId);
+		this.gom.createStage();
+		this.gom.initStageState(this.stores);
 
-					if (hPlayer) {
-						//already exist
-						hPlayer.setHandValue(hP.handValue);
-					} else {
-						//we need to create it
-						const handPlayer = new PlayerHand(hP.userId);
-						handPlayer.setHandValue(hP.handValue);
-						this.playersHand.push(handPlayer);
-					}
-				});
-
-				//check if all stage slots are busy
-				const existSomeEmptySlot = stageData.some((sData) => sData.value === SLOT_VALUE.EMPTY);
-				if (existSomeEmptySlot) {
-					this.phone.turnOffPhone();
-				} else {
-					this.phone.turnOnPhone();
-				}
-			}
-		});
-
-		const deskFolder = this.gom.getDeskFolder();
-		this.desk = new SlotLine(LOCATION.DESK, deskFolder);
-		if (this.stores) {
-			const state = this.stores.getMatchStoreState();
-			if (state) {
-				this.desk.init(state.desk.map((val, i) => ({ id: i, value: val })));
-			}
-		}
-
-		const stageFolder = this.gom.getStageFolder();
-		this.stage = new SlotLine(LOCATION.STAGE, stageFolder);
-		if (this.stores) {
-			const state = this.stores.getMatchStoreState();
-			if (state) {
-				this.stage.init(state.stage.map((val, i) => ({ id: i, value: val })));
-			}
-		}
-
-		///to test
-		const conn3 = this.desk
-			.getChangeEvent()
-			.Event.Connect((interactionData: { player: Player; idSlot: ID_SLOTS; slotValue: SLOT_VALUE }, deskData) => {
-				print("monitor: interaction data", interactionData);
-
-				const nData = deskData as { id: number; value: number }[];
-				print(
-					"monitor: slotline data",
-					nData.map((dData: { id: number; value: number }) => ({ id: dData.id, value: dData.value }))
+		this.gom.onDeskChange(
+			(params: {
+				interactionData: { player: Player; idSlot: ID_SLOTS; slotValue: SLOT_VALUE };
+				data: { id: number; value: number }[];
+			}) => {
+				const { player, idSlot } = params.interactionData;
+				const matchState = this.gom.getMatchState(this.stores);
+				const comparison = compareNewStateWithCurrentState(
+					{
+						player,
+						location: LOCATION.DESK,
+						idSlot
+					},
+					matchState
 				);
-
-				const { player, idSlot } = interactionData;
-				const matchState = stores.getMatchStoreState();
-
-				if (matchState) {
-					const stateUpdateData = getNewStateFromInteraction(
-						{
-							player,
-							location: LOCATION.DESK,
-							idSlot
-						},
-						matchState
-					);
-					const { updated, newState } = stateUpdateData;
-					if (updated && newState) {
-						this.stores.setMatchStoreState(newState);
-					} else {
-						print("nothing to update probably print empty message ");
-					}
+				const { updated, newState } = comparison;
+				if (updated && newState) {
+					this.gom.setMatchState(this.stores, newState);
 				} else {
-					print("Warning there is no matchState ");
+					print("nothing to update probably print empty message ");
 				}
-			});
+			}
+		);
 
-		const conn4 = this.stage
-			.getChangeEvent()
-			.Event.Connect(
-				(interactionData: { player: Player; idSlot: ID_SLOTS; slotValue: SLOT_VALUE }, stageData) => {
-					print("monitor: interaction data", interactionData);
+		this.gom.onStageChange(
+			(params: {
+				interactionData: { player: Player; idSlot: ID_SLOTS; slotValue: SLOT_VALUE };
+				data: { id: number; value: number }[];
+			}) => {
+				const { player, idSlot } = params.interactionData;
+				const matchState = this.gom.getMatchState(this.stores);
 
-					const nData = stageData as { id: number; value: number }[];
-					print(
-						"monitor: slotline data",
-						nData.map((dData: { id: number; value: number }) => ({ id: dData.id, value: dData.value }))
-					);
-
-					const { player, idSlot } = interactionData;
-					const matchState = stores.getMatchStoreState();
-
-					if (matchState) {
-						const stateUpdateData = getNewStateFromInteraction(
-							{
-								player,
-								location: LOCATION.STAGE,
-								idSlot
-							},
-							matchState
-						);
-						const { updated, newState } = stateUpdateData;
-						if (updated && newState) {
-							this.stores.setMatchStoreState(newState);
-						} else {
-							print("nothing to update probably print empty message ");
-						}
-					} else {
-						print("Warning there is no matchState ");
-					}
+				const comparison = compareNewStateWithCurrentState(
+					{
+						player,
+						location: LOCATION.STAGE,
+						idSlot
+					},
+					matchState
+				);
+				const { updated, newState } = comparison;
+				if (updated && newState) {
+					this.gom.setMatchState(this.stores, newState);
+				} else {
+					print("nothing to update probably print empty message ");
 				}
-			);
+			}
+		);
 
-		//Improve
-		this.connections.push(conn1);
-		this.connections.push(conn2);
-		this.connections.push(conn3);
-		this.connections.push(conn4);
-
-		///
-
-		this.clock.onOneSecComplementDo((sec: number) => {
+		this.gom.onOneSecTimer((sec: number) => {
 			this.gom.displaySecs(sec);
 		});
 
-		this.clock.onTimeCompleted(() => {
-			this.clock.stop();
-			this.gom.hideTime();
+		this.gom.onTimerCompleted(() => {
+			this.gom.stopTimer();
 			//notify it is finished
 			this.finishedEvent.Fire(id, MATCH_FINISH.LOOSE);
 		});
@@ -216,11 +141,11 @@ export class Match extends MyMaid {
 
 	init() {
 		print("match.init");
-		this.desk.enableSlots();
-		this.stage.enableSlots();
-		this.phone.turnOffPhone();
-		this.clock.startTime(MATCH_TIME);
-		this.gom.showTime();
+		this.gom.enableDeskSlots();
+		this.gom.enableStageSlots();
+		this.gom.turnOffPhone();
+		this.gom.startTimer();
+		this.gom.showTimer();
 		this.gom.openMatch();
 	}
 
@@ -235,6 +160,6 @@ export class Match extends MyMaid {
 	prepareMaid(): void {
 		//improve all the connections
 		this.connections.forEach((conn) => conn.Disconnect());
-		this.addListToMaid([this.clock, this.gom, this.phone, this.desk, this.stage]);
+		this.addListToMaid([this.gom]);
 	}
 }

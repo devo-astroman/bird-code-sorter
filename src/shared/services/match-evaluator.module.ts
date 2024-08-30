@@ -9,7 +9,7 @@ import {
 import { MATCH_STATE } from "shared/stores/match-store.module";
 import { fromIdSlotToIndex } from "./slot-service.module";
 
-export const getNewStateFromInteraction = (
+export const compareNewStateWithCurrentState = (
 	interactionData: { player: Player; location: LOCATION; idSlot: ID_SLOTS },
 	state: MATCH_STATE
 ): STATE_MODIFICACION_DATA => {

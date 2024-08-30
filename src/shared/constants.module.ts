@@ -54,7 +54,7 @@ export const SLOT_VALUE_COLORS = [
 ];
 
 export const PREMATCH_TIME = 3; //15
-export const MATCH_TIME = 120; //60
+export const MATCH_TIME = 5; //60
 export const RESET_TIME = 3; //5
 
 export const PLAYER_JUMP_HEIGHT = 7.2;

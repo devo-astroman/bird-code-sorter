@@ -1,4 +1,5 @@
 import Maid from "@rbxts/maid";
+import { Observer } from "@rbxts/observer";
 
 export abstract class MyMaid {
 	private maid: Maid = new Maid();
@@ -15,6 +16,15 @@ export abstract class MyMaid {
 
 	maidConnection<T>(signal: RBXScriptSignal, callback: (params: T) => void) {
 		const connection = signal.Connect(callback);
+		this.maid.GiveTask(connection);
+		return connection;
+	}
+
+	maidObserverConnection<T>(observer: Observer<T>, callback: (params: T) => void) {
+		const connection = observer.connect((data) => {
+			assert(data, "Warning undefined state data ");
+			callback(data);
+		});
 		this.maid.GiveTask(connection);
 		return connection;
 	}

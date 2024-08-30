@@ -33,7 +33,10 @@ export class SlotLine extends MyMaid {
 
 			const conn = slot.getInteracted().Event.Connect((player, id, value) => {
 				const interactionData = { player, idSlot: id, slotValue: value };
-				this.changeEvent.Fire(interactionData, this.slotsData);
+				this.changeEvent.Fire({
+					interactionData,
+					data: this.slotsData
+				});
 			});
 			const sData = {
 				id: i,

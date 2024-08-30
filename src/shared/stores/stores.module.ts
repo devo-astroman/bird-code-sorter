@@ -29,7 +29,9 @@ export class Stores extends MyMaid {
 	}
 
 	getMatchStoreState() {
-		return this.matchStore.getValue();
+		const state = this.matchStore.getValue();
+		assert(state, "Warning store state undefined ");
+		return state as MATCH_STATE;
 	}
 
 	getPlayersInMatchStoreState() {
