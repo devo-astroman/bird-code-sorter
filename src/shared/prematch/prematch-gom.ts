@@ -50,5 +50,20 @@ export class PrematchGom extends MyMaid {
 		billboardToStartGui.Enabled = true;
 	}
 
+	getFinishedEvent() {
+		const finishedEvent = this.root.FindFirstChild("FinishedEvent") as BindableEvent;
+		if (!finishedEvent) {
+			print("Warning not found ", "FinishedEvent");
+		}
+
+		return finishedEvent;
+	}
+
+	fireFinishedEvent(players: Model[]) {
+		const finishedEvent = this.getFinishedEvent();
+
+		finishedEvent.Fire(players);
+	}
+
 	prepareMaid(): void {}
 }

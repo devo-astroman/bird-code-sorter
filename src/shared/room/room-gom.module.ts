@@ -10,6 +10,10 @@ export class RoomGom extends MyMaid {
 		this.root = root;
 	}
 
+	getInstace() {
+		return this.root;
+	}
+
 	getPrematchFolder() {
 		const prematchFolder = this.root.FindFirstChild("Prematch", true);
 		if (!prematchFolder) {

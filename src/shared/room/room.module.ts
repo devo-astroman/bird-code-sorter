@@ -1,5 +1,5 @@
 import { Observer } from "@rbxts/observer";
-import { MATCH_FINISH, PLAYER_IN_MATCH_DATA, ROOM_PHASE } from "shared/constants.module";
+import { MATCH_FINISH, ROOM_PHASE } from "shared/constants.module";
 import { Prematch } from "shared/prematch/prematch.module";
 import { Stores } from "shared/stores/stores.module";
 import { RoomGom } from "./room-gom.module";
@@ -14,7 +14,6 @@ export class Room extends MyMaid {
 	private gom: RoomGom;
 
 	private room$: Observer<ROOM_PHASE>;
-	private players$: Observer<PLAYER_IN_MATCH_DATA[]>;
 
 	private preMatch!: Prematch;
 	private match!: Match;
@@ -23,52 +22,38 @@ export class Room extends MyMaid {
 
 	private resetEvent: BindableEvent;
 	private phaseFinishedEvent: BindableEvent;
-	private instace: Folder;
 
 	private connection!: RBXScriptConnection;
+	private connections!: RBXScriptConnection[];
 	constructor(instance: Instance) {
 		super();
 		print("- Room -");
-		this.instace = instance as Folder;
 		this.stores = new Stores();
 		this.gom = new RoomGom(instance);
 		this.room$ = this.stores.getRoomStoreState$();
-		this.players$ = this.stores.getPlayerStoreState$();
 		this.phaseFinishedEvent = this.gom.getPhaseFinishedEvent();
 		this.resetEvent = this.gom.getResetEvent();
-
-		this.gom.onPhaseFinished((id: ROOM_PHASE, data: Model[] | MATCH_FINISH) => {
-			if (id === ROOM_PHASE.PREMATCH) {
-				const userIds = (data as Model[]).map((d) => getUserIdFromPlayerCharacter(d));
-				this.stores.setMatchStorePlayers(userIds);
-				this.stores.setRoomStoreState(ROOM_PHASE.MATCH);
-			} else if (id === ROOM_PHASE.MATCH) {
-				if (data === MATCH_FINISH.WIN) {
-					print("WIN!!!");
-				} else {
-					print("LOOSE!!!");
-				}
-			} else {
-				print("warning there is no phase with id ", id);
-			}
-		});
-
-		this.players$.connect((data) => {
-			print("PLAAAYERS:  ", data);
-		});
 
 		const prematchFolder = this.gom.getPrematchFolder();
 		if (prematchFolder) {
 			this.preMatch = new Prematch(ROOM_PHASE.PREMATCH, prematchFolder, this.phaseFinishedEvent);
+			const conn1 = this.preMatch.getFinishedEvent().Event.Connect((players) => {
+				//allow players go to match
+				const userIds = (players as Model[]).map((d) => getUserIdFromPlayerCharacter(d));
+				this.stores.setMatchStorePlayers(userIds); //These two should go to one action
+				this.stores.setRoomStoreState(ROOM_PHASE.MATCH); //These two should go to one action
+			});
+			this.connections.push(conn1);
 		}
 		const matchFolder = this.gom.getMatchFolder();
 		if (matchFolder) {
 			this.match = new Match(ROOM_PHASE.MATCH, matchFolder, this.stores);
-			this.match.getPlayerInteractionEvent().Event.Connect((data) => {
+			const conn2 = this.match.getPlayerInteractionEvent().Event.Connect((data) => {
 				print("Interaction data ", data);
 			});
+			this.connections.push(conn2);
 
-			this.match.getFinishedEvent().Event.Connect((data: unknown) => {
+			const conn3 = this.match.getFinishedEvent().Event.Connect((data: unknown) => {
 				print("Finished data ", data);
 				if (data === MATCH_FINISH.WIN) {
 					//congrats the player
@@ -78,14 +63,16 @@ export class Room extends MyMaid {
 					this.stores.setRoomStoreState(ROOM_PHASE.LOOSE);
 				}
 			});
+			this.connections.push(conn3);
 		}
 
 		const winFolder = this.gom.getWinFolder();
 		this.win = new Win(0, this.stores, winFolder);
-		this.win.getFinishedEvent().Event.Connect(() => {
+		const conn4 = this.win.getFinishedEvent().Event.Connect(() => {
 			//this.stores.setRoomStoreState(ROOM_PHASE.PREMATCH);
 			this.resetEvent.Fire();
 		});
+		this.connections.push(conn4);
 
 		this.loose = new Loose(0, this.stores);
 		print("before prepareMaid");
@@ -100,7 +87,6 @@ export class Room extends MyMaid {
 					//preMatch.finished(()=>this.stores.setRoomStoreState(ROOM_PHASE.MATCH))
 				} else if (phase === ROOM_PHASE.MATCH) {
 					print("match");
-					print("players in the match ", this.stores.getPlayerStoreState());
 					//match.init
 					this.match.init();
 				} else if (phase === ROOM_PHASE.WIN) {
@@ -126,10 +112,21 @@ export class Room extends MyMaid {
 	}
 
 	getRootInstace() {
-		return this.instace;
+		return this.gom.getInstace();
 	}
 
 	prepareMaid() {
-		this.addListToMaid([this.stores, this.gom, this.preMatch, this.match, this.win, this.loose, this.connection]);
+		const list = [
+			this.stores,
+			this.gom,
+			this.preMatch,
+			this.match,
+			this.win,
+			this.loose,
+			this.connection,
+			...this.connections
+		];
+
+		this.addListToMaid(list);
 	}
 }

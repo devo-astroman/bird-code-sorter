@@ -6,7 +6,6 @@ import { onPlayerAdded } from "shared/services/player-game-service.module";
 
 const Players = game.GetService("Players");
 Players.PlayerAdded.Connect(onPlayerAdded);
-
 const binder = new Binder(ROOM_TAG, Room);
 binder.Start();
 wait(5); // to ensure room is binded

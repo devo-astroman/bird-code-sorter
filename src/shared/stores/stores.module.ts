@@ -1,17 +1,14 @@
 import { ROOM_PHASE } from "shared/constants.module";
 import { RoomStore } from "./room-store.module";
-import { PlayerStore } from "./player-store.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { MATCH_STATE, MatchStore } from "./match-store.module";
 
 export class Stores extends MyMaid {
 	private roomStore: RoomStore;
-	private playerStore: PlayerStore;
 	private matchStore: MatchStore;
 	constructor() {
 		super();
 		this.roomStore = new RoomStore();
-		this.playerStore = new PlayerStore();
 		this.matchStore = new MatchStore();
 	}
 
@@ -21,18 +18,6 @@ export class Stores extends MyMaid {
 
 	setRoomStoreState(newState: ROOM_PHASE) {
 		this.roomStore.setPhase(newState);
-	}
-
-	getPlayerStoreState$() {
-		return this.playerStore.getObserver();
-	}
-
-	getPlayerStoreState() {
-		return this.playerStore.getValue();
-	}
-
-	setPlayersStoreState(players: Model[]) {
-		this.playerStore.setPlayers(players);
 	}
 
 	setMatchStoreState(newState: MATCH_STATE) {
@@ -60,6 +45,6 @@ export class Stores extends MyMaid {
 	}
 
 	prepareMaid(): void {
-		this.addListToMaid([this.roomStore, this.playerStore, this.matchStore]);
+		this.addListToMaid([this.roomStore, this.matchStore]);
 	}
 }

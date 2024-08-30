@@ -43,9 +43,8 @@ export class Prematch extends MyMaid {
 			this.gom.closePrematch();
 			this.gom.hideTimer();
 			this.zone.end();
-			//notify it is finished
 			const players = this.zone.getPlayersInZone();
-			finishedEvent.Fire(id, players);
+			this.gom.fireFinishedEvent(players);
 		});
 	}
 
@@ -53,6 +52,10 @@ export class Prematch extends MyMaid {
 		print("prematch.init");
 		this.gom.openPrematch();
 		this.zone.init();
+	}
+
+	getFinishedEvent() {
+		return this.gom.getFinishedEvent();
 	}
 
 	prepareMaid(): void {
