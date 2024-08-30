@@ -1,8 +1,8 @@
-export const findElement = (root: Instance, nameElement: string) => {
+export const findElement = <T extends Instance>(root: Instance, nameElement: string) => {
 	const element = root.FindFirstChild(nameElement, true);
 
 	const assertMsg = `Warning not found  ${nameElement}`;
 	assert(element, assertMsg);
 
-	return element;
+	return element as T;
 };

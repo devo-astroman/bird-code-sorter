@@ -22,7 +22,7 @@ export class RoomGom extends MyMaid {
 		}
 		return prematchFolder; */
 
-		const preMatchFolder = findElement(this.root, "Prematch") as Folder;
+		const preMatchFolder = findElement<Folder>(this.root, "Prematch");
 		return preMatchFolder;
 	}
 
@@ -32,7 +32,7 @@ export class RoomGom extends MyMaid {
 			print("Warning, not found ", matchFolder);
 		} */
 
-		const matchFolder = findElement(this.root, "Match") as Folder;
+		const matchFolder = findElement<Folder>(this.root, "Match");
 		return matchFolder;
 	}
 
@@ -42,7 +42,7 @@ export class RoomGom extends MyMaid {
 			print("Warning, not found ", "ResetEvent");
 		}
 		return event as BindableEvent; */
-		const event = findElement(this.root, "ResetEvent") as BindableEvent;
+		const event = findElement<BindableEvent>(this.root, "ResetEvent");
 		return event;
 	}
 
@@ -53,7 +53,7 @@ export class RoomGom extends MyMaid {
 		}
 		return event as BindableEvent; */
 
-		const event = findElement(this.root, "PhaseFinishedEvent") as BindableEvent;
+		const event = findElement<BindableEvent>(this.root, "PhaseFinishedEvent");
 		return event;
 	}
 
@@ -69,7 +69,7 @@ export class RoomGom extends MyMaid {
 		}
 		return winFolder; */
 
-		const winFolder = findElement(this.root, "Win") as Folder;
+		const winFolder = <Folder>findElement(this.root, "Win");
 		return winFolder;
 	}
 
