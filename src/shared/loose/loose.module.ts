@@ -7,16 +7,21 @@ export class Loose extends MyMaid {
 	private gom!: LooseGom;
 	private stores: Stores;
 	private playersUserId!: number[];
+	private root: Folder;
 
-	constructor(id: number, stores: Stores) {
+	constructor(id: number, root: Folder, stores: Stores) {
 		super();
 		this.id = id;
+		this.root = root;
 		this.stores = stores;
 		this.gom = new LooseGom();
 		print("Loose! --- ");
 	}
 
-	init() {}
+	init() {
+		wait(1);
+		this.killPlayers();
+	}
 
 	killPlayers() {
 		const handPlayer = this.stores.getMatchStoreState()?.handPlayers;
@@ -27,6 +32,15 @@ export class Loose extends MyMaid {
 			this.playersUserId = handPlayer.map((hP) => hP.userId);
 		}
 		this.gom.killPlayers(this.playersUserId);
+	}
+
+	getFinishedEvent() {
+		const finishedEvent = this.root.FindFirstChild("FinishedEvent") as BindableEvent;
+		if (!finishedEvent) {
+			print("Warning not found  ", "FinishedEvent");
+		}
+
+		return finishedEvent;
 	}
 
 	prepareMaid(): void {

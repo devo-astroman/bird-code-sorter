@@ -10,7 +10,7 @@ export class Prematch extends MyMaid {
 	private clock: TimerService;
 	private id: number;
 
-	constructor(id: number, instance: Instance, finishedEvent: BindableEvent) {
+	constructor(id: number, instance: Instance) {
 		super();
 		print("Prematch --- ", instance);
 		this.id = id;
