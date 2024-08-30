@@ -32,6 +32,8 @@ export class Loose extends MyMaid {
 			this.playersUserId = handPlayer.map((hP) => hP.userId);
 		}
 		this.gom.killPlayers(this.playersUserId);
+		wait(1);
+		this.getFinishedEvent().Fire();
 	}
 
 	getFinishedEvent() {
