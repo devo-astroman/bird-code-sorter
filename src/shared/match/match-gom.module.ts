@@ -20,6 +20,11 @@ export class MatchGom extends MyMaid {
 		super();
 		this.root = root;
 	}
+	onPlayerRemoved(cb: (player: Player) => void) {
+		const pS = game.GetService("Players");
+		this.maidConnection(pS.PlayerRemoving, cb);
+	}
+
 	displaySecs(secs: number) {
 		const screensFolder = findElement<Folder>(this.root, "Screens");
 		const parts = screensFolder.GetChildren() as Part[];

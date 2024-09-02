@@ -27,10 +27,17 @@ export class Match extends MyMaid {
 		this.stageGoal = generateGoalCombination();
 		print("Match --- ");
 		this.gom = new MatchGom(instance as Folder);
+
+		this.gom.onPlayerRemoved((player: Player) => {
+			const userId = player.UserId;
+			this.stores.removePlayerMatchByUserId(userId);
+		});
+
 		this.playerInteractionEvent = this.gom.getPlayerInteractionEvent();
 		this.finishedEvent = this.gom.getFinishedEvent();
 		this.gom.hideTimer();
 		this.gom.createPhone();
+
 		this.gom.onPhoneInteraction(() => {
 			const stageValues = this.gom.getStageValues(this.stores);
 			print("stageValues ");

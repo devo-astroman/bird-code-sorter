@@ -46,6 +46,10 @@ export class Stores extends MyMaid {
 		this.matchStore.setPlayersUserId(playersUserId);
 	}
 
+	removePlayerMatchByUserId(userId: number) {
+		this.matchStore.removePlayersByUserId(userId);
+	}
+
 	prepareMaid(): void {
 		this.addListToMaid([this.roomStore, this.matchStore]);
 	}

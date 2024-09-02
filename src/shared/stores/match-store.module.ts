@@ -55,6 +55,37 @@ export class MatchStore extends MyMaid {
 		}
 	}
 
+	removePlayersByUserId(userId: number) {
+		const currentState = this.getValue();
+		if (!currentState) {
+			print("Warning match store undefined");
+		} else {
+			const copyState = deepCopy(currentState);
+
+			const newHandPlayers: HAND_PLAYER[] = [];
+			let handPlayerToRestore: HAND_PLAYER = { userId: -1, handValue: SLOT_VALUE.EMPTY };
+			copyState.handPlayers.forEach((hP) => {
+				if (hP.userId === userId) {
+					if (hP.handValue !== SLOT_VALUE.EMPTY) {
+						handPlayerToRestore = hP;
+					}
+				} else {
+					newHandPlayers.push(hP);
+				}
+			});
+
+			if (handPlayerToRestore.userId !== -1) {
+				if (handPlayerToRestore.handValue !== SLOT_VALUE.EMPTY) {
+					const index = copyState.desk.indexOf(SLOT_VALUE.EMPTY);
+					copyState.desk[index] = handPlayerToRestore.handValue;
+				}
+
+				copyState.handPlayers = newHandPlayers;
+				this.setState(copyState);
+			}
+		}
+	}
+
 	prepareMaid(): void {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		//this.addListToMaid([this.match$, this.state as any]);
