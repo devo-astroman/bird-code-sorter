@@ -12,14 +12,13 @@ export class Prematch extends MyMaid {
 
 		this.gom = new PrematchGom(instance as Folder);
 		this.gom.hideTimer();
-		this.gom.createZone(
-			() => {
-				this.gom.startTimer();
-			},
-			() => {
-				this.gom.stopTimer();
-			}
-		);
+		this.gom.createZone();
+		this.gom.onZoneFirstPlayerEnter(() => {
+			this.gom.startTimer();
+		});
+		this.gom.onZoneLastPlayerExit(() => {
+			this.gom.stopTimer();
+		});
 
 		this.gom.onOneSecTimer((sec: number) => {
 			this.gom.displaySecs(sec);
@@ -28,10 +27,16 @@ export class Prematch extends MyMaid {
 		this.gom.onTimerCompleted(() => {
 			this.gom.closePrematch();
 			this.gom.hideTimer();
+			wait(3);
 
-			this.gom.endZone();
-
-			this.gom.fireFinishedEvent();
+			const playersInZone = this.gom.getPlayersInZone().size();
+			if (playersInZone > 0) {
+				//to ensure there are players in the zone
+				this.gom.endZone();
+				this.gom.fireFinishedEvent();
+			} else {
+				this.gom.openPrematch();
+			}
 		});
 	}
 

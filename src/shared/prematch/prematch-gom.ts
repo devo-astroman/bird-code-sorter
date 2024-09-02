@@ -94,9 +94,17 @@ export class PrematchGom extends MyMaid {
 		this.clock.onTimeCompleted(cb);
 	}
 
-	createZone(cb1: () => void, cb2: () => void) {
+	createZone() {
 		const zonePart = this.getPrematchZonePart();
-		this.zone = new Zone(zonePart, cb1, cb2);
+		this.zone = new Zone(zonePart);
+	}
+
+	onZoneFirstPlayerEnter(cb: () => void) {
+		this.zone.onFirstPlayerEnter(cb);
+	}
+
+	onZoneLastPlayerExit(cb: () => void) {
+		this.zone.onLastPlayerExit(cb);
 	}
 
 	initZone() {

@@ -1,16 +1,13 @@
 import { MyMaid } from "shared/maid/my-maid.module";
 import { ZoneGom } from "./zone-gom";
+import { getUserIdFromPlayerCharacter } from "shared/services/player-game-service.module";
 
 export class Zone extends MyMaid {
 	private gom: ZoneGom;
 	private playersInside: Model[] = [];
-	private onFirstPlayerEnterFn: () => void;
-	private onLastPlayerExitFn: () => void;
 
-	constructor(zonePart: Part, onFirstPlayerEnterFn: () => void, onLastPlayerExitFn: () => void) {
+	constructor(zonePart: Part) {
 		super();
-		this.onFirstPlayerEnterFn = onFirstPlayerEnterFn;
-		this.onLastPlayerExitFn = onLastPlayerExitFn;
 		this.gom = new ZoneGom(zonePart);
 	}
 	init() {
@@ -24,7 +21,7 @@ export class Zone extends MyMaid {
 
 				this.playersInside.push(playerCharacter);
 				if (this.playersInside.size() === 1) {
-					this.onFirstPlayerEnterFn();
+					this.gom.fireChangeFirstPlayerEnter();
 				}
 			}
 		});
@@ -37,10 +34,28 @@ export class Zone extends MyMaid {
 				this.playersInside = this.playersInside.filter((player) => player !== playerCharacter);
 
 				if (!this.playersInside.size()) {
-					this.onLastPlayerExitFn();
+					this.gom.fireChangeLastPlayerExit();
 				}
 			}
 		});
+
+		this.gom.onPlayerRemoved((player: Player) => {
+			print("PLAYERS ___ ", this.playersInside);
+
+			this.playersInside = this.playersInside.filter((p) => -1 !== getUserIdFromPlayerCharacter(p));
+			if (!this.playersInside.size()) {
+				//this.onLastPlayerExitFn();
+				this.gom.fireChangeLastPlayerExit();
+			}
+		});
+	}
+
+	onFirstPlayerEnter(cb: () => void) {
+		this.gom.onFirstPlayerEnter(cb);
+	}
+
+	onLastPlayerExit(cb: () => void) {
+		this.gom.onLastPlayerExit(cb);
 	}
 
 	getPlayersInZone() {

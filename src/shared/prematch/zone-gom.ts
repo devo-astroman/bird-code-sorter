@@ -7,9 +7,15 @@ export class ZoneGom extends MyMaid {
 	private part: Part;
 	private connectionEnter!: RBXScriptConnection;
 	private connectionExit!: RBXScriptConnection;
+	private changeEvent!: BindableEvent;
 	constructor(part: Part) {
 		super();
 		this.part = part;
+	}
+
+	onPlayerRemoved(cb: (player: Player) => void) {
+		const pS = game.GetService("Players");
+		this.maidConnection(pS.PlayerRemoving, cb);
 	}
 
 	triggerOnPlayerEnter(fn: (playerCharacter: Model) => void) {
@@ -48,6 +54,30 @@ export class ZoneGom extends MyMaid {
 	allowPlayerJump(character: Model) {
 		const humanoid = findElement<Humanoid>(character, "Humanoid");
 		humanoid.JumpHeight = PLAYER_JUMP_HEIGHT;
+	}
+
+	onFirstPlayerEnter(cb: () => void) {
+		this.changeEvent = findElement<BindableEvent>(this.part, "ChangeEvent");
+		this.maidConnection(this.changeEvent.Event, (eventName: string) => {
+			if (eventName === "PlayerEnter") cb();
+		});
+	}
+
+	fireChangeFirstPlayerEnter() {
+		this.changeEvent = findElement<BindableEvent>(this.part, "ChangeEvent");
+		this.changeEvent.Fire("PlayerEnter");
+	}
+
+	onLastPlayerExit(cb: () => void) {
+		this.changeEvent = findElement<BindableEvent>(this.part, "ChangeEvent");
+		this.maidConnection(this.changeEvent.Event, (eventName: string) => {
+			if (eventName === "LastPlayerExit") cb();
+		});
+	}
+
+	fireChangeLastPlayerExit() {
+		this.changeEvent = findElement<BindableEvent>(this.part, "ChangeEvent");
+		this.changeEvent.Fire("LastPlayerExit");
 	}
 
 	prepareMaid(): void {

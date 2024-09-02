@@ -53,8 +53,8 @@ export const SLOT_VALUE_COLORS = [
 	new Color3(0.502, 0, 0.502) //PURPLE
 ];
 
-export const PREMATCH_TIME = 3; //15
-export const MATCH_TIME = 5; //60
+export const PREMATCH_TIME = 15; //15
+export const MATCH_TIME = 60; //60
 export const RESET_TIME = 3; //5
 
 export const PLAYER_JUMP_HEIGHT = 7.2;
