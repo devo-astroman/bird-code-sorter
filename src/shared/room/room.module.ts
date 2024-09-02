@@ -32,9 +32,12 @@ export class Room extends MyMaid {
 			if (data === MATCH_FINISH.WIN) {
 				//congrats the player
 				this.stores.setRoomStoreState(ROOM_PHASE.WIN);
-			} else {
+			} else if (data === MATCH_FINISH.LOOSE) {
 				//kill the players
 				this.stores.setRoomStoreState(ROOM_PHASE.LOOSE);
+			} else {
+				//abort
+				this.stores.setRoomStoreState(ROOM_PHASE.ABORTING);
 			}
 		});
 
@@ -61,7 +64,9 @@ export class Room extends MyMaid {
 				} else if (phase === ROOM_PHASE.WIN) {
 					this.gom.initWin();
 				} else if (phase === ROOM_PHASE.LOOSE) {
-					this.gom.initLoose();
+					this.resetEvent.Fire();
+				} else if (phase === ROOM_PHASE.ABORTING) {
+					this.resetEvent.Fire();
 				}
 			}
 		});

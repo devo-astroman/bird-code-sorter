@@ -60,6 +60,11 @@ export class Match extends MyMaid {
 		});
 
 		this.gom.onMatchStateChange(this.stores, (data) => {
+			if (data.handPlayers.size() === 0) {
+				this.finishedEvent.Fire(MATCH_FINISH.ABORT);
+				return;
+			}
+
 			//update desk
 			const deskData = data.desk.map((d, i) => ({ id: i, value: d }));
 			this.gom.setDeskValues(deskData);

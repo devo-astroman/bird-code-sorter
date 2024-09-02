@@ -15,12 +15,14 @@ export enum ROOM_PHASE {
 	PREMATCH = 0,
 	MATCH = 1,
 	WIN = 2,
-	LOOSE = 3
+	LOOSE = 3,
+	ABORTING = 4
 }
 
 export enum MATCH_FINISH {
 	WIN = 0,
-	LOOSE = 1
+	LOOSE = 1,
+	ABORT = 2
 }
 
 export enum SLOT_VALUE {
@@ -53,7 +55,7 @@ export const SLOT_VALUE_COLORS = [
 	new Color3(0.502, 0, 0.502) //PURPLE
 ];
 
-export const PREMATCH_TIME = 15; //15
+export const PREMATCH_TIME = 3; //15
 export const MATCH_TIME = 60; //60
 export const RESET_TIME = 3; //5
 
