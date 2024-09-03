@@ -64,7 +64,7 @@ export class Room extends MyMaid {
 				} else if (phase === ROOM_PHASE.WIN) {
 					this.gom.initWin();
 				} else if (phase === ROOM_PHASE.LOOSE) {
-					this.resetEvent.Fire();
+					this.gom.initLoose();
 				} else if (phase === ROOM_PHASE.ABORTING) {
 					this.resetEvent.Fire();
 				}
