@@ -1,13 +1,18 @@
 import { PLAYER_JUMP_HEIGHT } from "shared/constants.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { findElement } from "shared/services/gom-service.module";
-import { isPlayerUpperTorso } from "shared/services/player-game-service.module";
+import {
+	getCharacterFromUserId,
+	getUserIdFromPlayerCharacter,
+	isPlayerUpperTorso
+} from "shared/services/player-game-service.module";
 
 export class ZoneGom extends MyMaid {
 	private part: Part;
 	private connectionEnter!: RBXScriptConnection;
 	private connectionExit!: RBXScriptConnection;
 	private changeEvent!: BindableEvent;
+	private playerRemoveConnection!: RBXScriptConnection;
 	constructor(part: Part) {
 		super();
 		this.part = part;
@@ -15,16 +20,17 @@ export class ZoneGom extends MyMaid {
 
 	onPlayerRemoved(cb: (player: Player) => void) {
 		const pS = game.GetService("Players");
-		this.maidConnection(pS.PlayerRemoving, cb);
+		this.playerRemoveConnection = this.maidConnection(pS.PlayerRemoving, cb);
 	}
 
-	triggerOnPlayerEnter(fn: (playerCharacter: Model) => void) {
+	triggerOnPlayerEnter(fn: (playerUserId: number) => void) {
 		const zonePart = this.part;
 		this.connectionEnter = this.maidConnection(zonePart.Touched, (touchedPart: BasePart) => {
 			if (isPlayerUpperTorso(touchedPart)) {
 				const playerCharacter = touchedPart.Parent as Model;
+				const userId = getUserIdFromPlayerCharacter(playerCharacter);
 
-				fn(playerCharacter);
+				fn(userId);
 			}
 		});
 	}
@@ -32,12 +38,13 @@ export class ZoneGom extends MyMaid {
 		this.maidDestroyConnection(this.connectionEnter);
 	}
 
-	triggerOnPlayerExit(fn: (playerCharacter: Model) => void) {
+	triggerOnPlayerExit(fn: (playerUserId: number) => void) {
 		const zonePart = this.part;
 		this.connectionExit = this.maidConnection(zonePart.TouchEnded, (touchedPart: BasePart) => {
 			if (isPlayerUpperTorso(touchedPart)) {
 				const playerCharacter = touchedPart.Parent as Model;
-				fn(playerCharacter);
+				const userId = getUserIdFromPlayerCharacter(playerCharacter);
+				fn(userId);
 			}
 		});
 	}
@@ -46,12 +53,18 @@ export class ZoneGom extends MyMaid {
 		this.connectionExit.Disconnect();
 	}
 
-	blockPlayerJump(character: Model) {
+	removeOnPlayerRemoved() {
+		this.playerRemoveConnection.Disconnect();
+	}
+
+	blockPlayerJump(userId: number) {
+		const character = getCharacterFromUserId(userId);
 		const humanoid = findElement<Humanoid>(character, "Humanoid");
 		humanoid.JumpHeight = 0;
 	}
 
-	allowPlayerJump(character: Model) {
+	allowPlayerJump(userId: number) {
+		const character = getCharacterFromUserId(userId);
 		const humanoid = findElement<Humanoid>(character, "Humanoid");
 		humanoid.JumpHeight = PLAYER_JUMP_HEIGHT;
 	}

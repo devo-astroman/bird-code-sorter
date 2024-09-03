@@ -4,48 +4,47 @@ import { getUserIdFromPlayerCharacter } from "shared/services/player-game-servic
 
 export class Zone extends MyMaid {
 	private gom: ZoneGom;
-	private playersInside: Model[] = [];
+	private playersInside: number[] = [];
 
 	constructor(zonePart: Part) {
 		super();
 		this.gom = new ZoneGom(zonePart);
 	}
 	init() {
-		this.gom.triggerOnPlayerEnter((playerCharacter) => {
-			print("player entered ", playerCharacter);
-
-			const playerAlreadyPushed = this.playersInside.some((player) => player === playerCharacter);
+		this.gom.triggerOnPlayerEnter((userId) => {
+			const playerAlreadyPushed = this.playersInside.some((player) => player === userId);
 
 			if (!playerAlreadyPushed) {
-				this.gom.blockPlayerJump(playerCharacter);
+				this.gom.blockPlayerJump(userId);
 
-				this.playersInside.push(playerCharacter);
+				this.playersInside.push(userId);
 				if (this.playersInside.size() === 1) {
 					this.gom.fireChangeFirstPlayerEnter();
 				}
 			}
 		});
 
-		this.gom.triggerOnPlayerExit((playerCharacter) => {
-			print("player exit ", playerCharacter);
-			const playerExist = this.playersInside.some((player) => player === playerCharacter);
+		this.gom.triggerOnPlayerExit((userId) => {
+			print("player exit ", userId);
+			const playerExist = this.playersInside.some((player) => player === userId);
 			if (playerExist) {
-				this.gom.allowPlayerJump(playerCharacter);
-				this.playersInside = this.playersInside.filter((player) => player !== playerCharacter);
+				this.gom.allowPlayerJump(userId);
+				this.playersInside = this.playersInside.filter((player) => player !== userId);
 
-				if (!this.playersInside.size()) {
+				if (this.playersInside.size() === 0) {
 					this.gom.fireChangeLastPlayerExit();
 				}
 			}
 		});
 
 		this.gom.onPlayerRemoved((player: Player) => {
-			print("PLAYERS ___ ", this.playersInside);
-
-			this.playersInside = this.playersInside.filter((p) => -1 !== getUserIdFromPlayerCharacter(p));
-			if (!this.playersInside.size()) {
-				//this.onLastPlayerExitFn();
+			print("Zone on playerRemoved!");
+			const userId = player.UserId;
+			this.playersInside = this.playersInside.filter((pUid) => userId !== pUid);
+			if (this.playersInside.size() === 0) {
 				this.gom.fireChangeLastPlayerExit();
+			} else {
+				print("there is still players inside the zone");
 			}
 		});
 	}
@@ -65,6 +64,7 @@ export class Zone extends MyMaid {
 	end() {
 		this.gom.removeTriggerOnPlayerEnter();
 		this.gom.removeTriggerOnPlayerExit();
+		this.gom.removeOnPlayerRemoved();
 
 		this.playersInside.forEach((playerCharacter) => {
 			this.gom.allowPlayerJump(playerCharacter);

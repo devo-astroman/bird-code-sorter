@@ -59,7 +59,7 @@ export class RoomGom extends MyMaid {
 		return this.prematch;
 	}
 
-	onPrematchFinished(cb: (players: Model[]) => void) {
+	onPrematchFinished(cb: (players: number[]) => void) {
 		this.maidConnection(this.prematch.getFinishedEvent().Event, cb);
 	}
 	initPrematch() {

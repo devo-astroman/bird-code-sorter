@@ -63,26 +63,27 @@ export class MatchStore extends MyMaid {
 			const copyState = deepCopy(currentState);
 
 			const newHandPlayers: HAND_PLAYER[] = [];
-			let handPlayerToRestore: HAND_PLAYER = { userId: -1, handValue: SLOT_VALUE.EMPTY };
+			let birdInHandOfPlayerToRemove = SLOT_VALUE.EMPTY;
 			copyState.handPlayers.forEach((hP) => {
 				if (hP.userId === userId) {
 					if (hP.handValue !== SLOT_VALUE.EMPTY) {
-						handPlayerToRestore = hP;
+						birdInHandOfPlayerToRemove = hP.handValue;
 					}
 				} else {
 					newHandPlayers.push(hP);
 				}
 			});
 
-			if (handPlayerToRestore.userId !== -1) {
-				if (handPlayerToRestore.handValue !== SLOT_VALUE.EMPTY) {
-					const index = copyState.desk.indexOf(SLOT_VALUE.EMPTY);
-					copyState.desk[index] = handPlayerToRestore.handValue;
-				}
-
-				copyState.handPlayers = newHandPlayers;
-				this.setState(copyState);
+			if (birdInHandOfPlayerToRemove !== SLOT_VALUE.EMPTY) {
+				const index = copyState.desk.indexOf(SLOT_VALUE.EMPTY);
+				copyState.desk[index] = birdInHandOfPlayerToRemove;
 			}
+			copyState.handPlayers = newHandPlayers;
+			print("______");
+			print("Originalstate ", currentState);
+			print("Setting the new state ", copyState);
+			print("______");
+			this.setState(copyState);
 		}
 	}
 

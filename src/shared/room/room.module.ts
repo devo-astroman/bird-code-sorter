@@ -20,10 +20,9 @@ export class Room extends MyMaid {
 		this.resetEvent = this.gom.getResetEvent();
 
 		this.gom.createPrematch(ROOM_PHASE.PREMATCH);
-		this.gom.onPrematchFinished((players) => {
+		this.gom.onPrematchFinished((usersIds) => {
 			//allow players go to match
-			const userIds = (players as Model[]).map((d) => getUserIdFromPlayerCharacter(d));
-			this.stores.setMatchStorePlayers(userIds); //These two should go to one action
+			this.stores.setMatchStorePlayers(usersIds); //These two should go to one action
 			this.stores.setRoomStoreState(ROOM_PHASE.MATCH); //These two should go to one action
 		});
 
