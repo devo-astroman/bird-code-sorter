@@ -146,6 +146,9 @@ export class Match extends MyMaid {
 
 		this.gom.onTimerCompleted(() => {
 			this.gom.stopTimer();
+			this.gom.turnOffPhone();
+			this.gom.disableDeskSlots();
+			this.gom.disableStageSlots();
 			//notify it is finished
 			this.finishedEvent.Fire(id, MATCH_FINISH.LOOSE);
 		});
