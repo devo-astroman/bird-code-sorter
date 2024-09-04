@@ -40,11 +40,15 @@ export class Zone extends MyMaid {
 		this.gom.onPlayerRemoved((player: Player) => {
 			print("Zone on playerRemoved!");
 			const userId = player.UserId;
-			this.playersInside = this.playersInside.filter((pUid) => userId !== pUid);
-			if (this.playersInside.size() === 0) {
-				this.gom.fireChangeLastPlayerExit();
-			} else {
-				print("there is still players inside the zone");
+			const isPlayerInZone = this.playersInside.some((pId) => pId === userId);
+
+			if (isPlayerInZone) {
+				this.playersInside = this.playersInside.filter((pUid) => userId !== pUid);
+				if (this.playersInside.size() === 0) {
+					this.gom.fireChangeLastPlayerExit();
+				} else {
+					print("there is still players inside the zone");
+				}
 			}
 		});
 	}

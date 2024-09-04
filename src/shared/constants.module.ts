@@ -55,9 +55,34 @@ export const SLOT_VALUE_COLORS = [
 	new Color3(0.502, 0, 0.502) //PURPLE
 ];
 
-export const PREMATCH_TIME = 10; //15
-export const MATCH_TIME = 120; //60
+export const PREMATCH_TIME = 20; //15
+export const MATCH_TIME = 60; //60
 export const RESET_TIME = 8; //5
+export const KILL_TIME = 20; //5
+
+/* 
+testings:
+	prematch:
+		all player removed (done)
+		all but 1 removed (done)
+	match
+		all player removed (done)
+		player with bird removed (done)
+		all player with bird removed (done)
+		all player removed but 1 wins (here)
+		all player removed but 1 loose
+	win
+		all player removed (done)
+		all player removed but 1 (done)
+	loose
+		all player removed (done)
+		all player removed but 1 (done)
+
+	bug:
+		-bug1, some times the clock of the match changes between two clocks like it is not well cleared
+		-bug2, the interactions should be disabled when goes out from match to win or to loose(here)
+	
+*/
 
 export const PLAYER_JUMP_HEIGHT = 7.2;
 

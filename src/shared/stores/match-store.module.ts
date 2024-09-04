@@ -60,30 +60,34 @@ export class MatchStore extends MyMaid {
 		if (!currentState) {
 			print("Warning match store undefined");
 		} else {
-			const copyState = deepCopy(currentState);
+			const isPlayerInHandPlayers = currentState.handPlayers.some((hp) => hp.userId === userId);
 
-			const newHandPlayers: HAND_PLAYER[] = [];
-			let birdInHandOfPlayerToRemove = SLOT_VALUE.EMPTY;
-			copyState.handPlayers.forEach((hP) => {
-				if (hP.userId === userId) {
-					if (hP.handValue !== SLOT_VALUE.EMPTY) {
-						birdInHandOfPlayerToRemove = hP.handValue;
+			if (isPlayerInHandPlayers) {
+				const copyState = deepCopy(currentState);
+
+				const newHandPlayers: HAND_PLAYER[] = [];
+				let birdInHandOfPlayerToRemove = SLOT_VALUE.EMPTY;
+				copyState.handPlayers.forEach((hP) => {
+					if (hP.userId === userId) {
+						if (hP.handValue !== SLOT_VALUE.EMPTY) {
+							birdInHandOfPlayerToRemove = hP.handValue;
+						}
+					} else {
+						newHandPlayers.push(hP);
 					}
-				} else {
-					newHandPlayers.push(hP);
-				}
-			});
+				});
 
-			if (birdInHandOfPlayerToRemove !== SLOT_VALUE.EMPTY) {
-				const index = copyState.desk.indexOf(SLOT_VALUE.EMPTY);
-				copyState.desk[index] = birdInHandOfPlayerToRemove;
+				if (birdInHandOfPlayerToRemove !== SLOT_VALUE.EMPTY) {
+					const index = copyState.desk.indexOf(SLOT_VALUE.EMPTY);
+					copyState.desk[index] = birdInHandOfPlayerToRemove;
+				}
+				copyState.handPlayers = newHandPlayers;
+				print("______");
+				print("Originalstate ", currentState);
+				print("Setting the new state ", copyState);
+				print("______");
+				this.setState(copyState);
 			}
-			copyState.handPlayers = newHandPlayers;
-			print("______");
-			print("Originalstate ", currentState);
-			print("Setting the new state ", copyState);
-			print("______");
-			this.setState(copyState);
 		}
 	}
 

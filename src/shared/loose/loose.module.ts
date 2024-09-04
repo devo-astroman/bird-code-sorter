@@ -1,6 +1,8 @@
 import { MyMaid } from "shared/maid/my-maid.module";
 import { Stores } from "shared/stores/stores.module";
 import { LooseGom } from "./loose-gom.module";
+import { getModelsFromUserIds } from "shared/services/player-game-service.module";
+import { KILL_TIME } from "shared/constants.module";
 
 export class Loose extends MyMaid {
 	private id: number;
@@ -19,21 +21,21 @@ export class Loose extends MyMaid {
 	}
 
 	init() {
-		wait(1);
-		this.killPlayers();
-	}
+		wait(KILL_TIME);
 
-	killPlayers() {
-		const handPlayer = this.stores.getMatchStoreState()?.handPlayers;
-
-		if (!handPlayer) {
-			print("Warning there are not players in loose");
-		} else {
-			this.playersUserId = handPlayer.map((hP) => hP.userId);
+		const userIds = this.stores.getPlayersInMatchStoreState();
+		const characterModels = getModelsFromUserIds(userIds);
+		if (characterModels.size() > 0) {
+			//telerport only if there are players to be teleported!
+			this.killPlayers(userIds);
 		}
-		this.gom.killPlayers(this.playersUserId);
+
 		wait(1);
 		this.getFinishedEvent().Fire();
+	}
+
+	killPlayers(userIds: number[]) {
+		this.gom.killPlayers(userIds);
 	}
 
 	getFinishedEvent() {

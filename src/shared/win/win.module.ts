@@ -3,7 +3,7 @@ import { MyMaid } from "shared/maid/my-maid.module";
 import { Stores } from "shared/stores/stores.module";
 import { WinGom } from "./win-gom.module";
 import { TimerService } from "shared/services/timer-service.module";
-import { getCharacterFromUserId } from "shared/services/player-game-service.module";
+import { getModelsFromUserIds } from "shared/services/player-game-service.module";
 
 export class Win extends MyMaid {
 	private id: number;
@@ -29,12 +29,13 @@ export class Win extends MyMaid {
 			this.gom.hideTime();
 			this.clock.stop();
 			const userIds = this.stores.getPlayersInMatchStoreState();
-			const characterModels = userIds.map((uId) => getCharacterFromUserId(uId));
-
-			this.gom.teleportToWinPlaces(characterModels);
+			const characterModels = getModelsFromUserIds(userIds);
+			if (characterModels.size() > 0) {
+				//telerport only if there are players to be teleported!
+				this.gom.teleportToWinPlaces(characterModels);
+			}
 			this.finishedEvent = this.gom.getFinishedEvent();
 			this.finishedEvent.Fire();
-			//notify win is finished
 		});
 		print("Win! --- ");
 	}

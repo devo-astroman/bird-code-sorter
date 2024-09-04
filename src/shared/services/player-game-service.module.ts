@@ -52,10 +52,36 @@ export function getCharacterFromUserId(userId: number) {
 	}
 }
 
+export const getModelsFromUserIds = (userIds: number[]) => {
+	const playersInGameIds = game.GetService("Players").GetPlayers();
+	const machData = matchUserIds(
+		userIds,
+		playersInGameIds.map((pIGIds) => ({
+			userId: pIGIds.UserId
+		}))
+	);
+
+	const characterModels = machData.filter((mD) => mD.match).map((mD) => getCharacterFromUserId(mD.userId));
+	return characterModels;
+};
+
 export const getHumanoidFromUserId = (userId: number) => {
 	const character = getCharacterFromUserId(userId);
 
 	const humanoid = character.FindFirstChild("Humanoid", true) as Humanoid;
 
 	return humanoid;
+};
+
+export const matchUserIds = (userIds: number[], playersInGame: { userId: number }[]) => {
+	const result = userIds.map((userId) => {
+		const isMatch = playersInGame.some((player) => player.userId === userId);
+
+		return {
+			match: isMatch,
+			userId: userId
+		};
+	});
+
+	return result;
 };
