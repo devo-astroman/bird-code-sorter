@@ -1,12 +1,12 @@
 import { PREMATCH_TIME } from "shared/constants.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { findElement } from "shared/services/gom-service.module";
-import { TimerService } from "shared/services/timer-service.module";
 import { Zone } from "./zone.module";
+import { ClockService } from "shared/services/clock-service.module";
 
 export class PrematchGom extends MyMaid {
 	private root: Folder;
-	private clock!: TimerService;
+	private clock!: ClockService;
 	private zone!: Zone;
 	constructor(root: Folder) {
 		super();
@@ -42,6 +42,8 @@ export class PrematchGom extends MyMaid {
 
 	hideTimer() {
 		const billboardGui = findElement<BillboardGui>(this.root, "BillboardGui");
+		const textLabel = findElement<TextLabel>(billboardGui, "SecsTextLabel");
+		textLabel.Text = PREMATCH_TIME + "";
 		billboardGui.Enabled = false;
 
 		const billboardToStartGui = findElement<BillboardGui>(this.root, "BillboardToStartGui");
@@ -69,28 +71,24 @@ export class PrematchGom extends MyMaid {
 	}
 
 	createTimer() {
-		if (!this.clock) this.clock = new TimerService();
+		this.clock = new ClockService();
 	}
 
 	startTimer() {
-		this.createTimer();
 		this.clock.startTime(PREMATCH_TIME);
 		this.showTimer();
 	}
 
 	stopTimer() {
-		this.createTimer();
 		this.clock.stop();
 		this.hideTimer();
 	}
 
 	onOneSecTimer(cb: (sec: number) => void) {
-		this.createTimer();
-		this.clock.onOneSecComplementDo(cb);
+		this.clock.onOneSecDo(cb);
 	}
 
 	onTimerCompleted(cb: () => void) {
-		this.createTimer();
 		this.clock.onTimeCompleted(cb);
 	}
 

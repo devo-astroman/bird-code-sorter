@@ -1,17 +1,24 @@
 import { ID_SLOTS, LOCATION, MATCH_TIME, SLOT_VALUE } from "shared/constants.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { findElement } from "shared/services/gom-service.module";
-import { displayInScreenList, hideScreenList, showScreenList } from "shared/services/screens-service.module";
+import {
+	displayInScreenList,
+	hideScreenList,
+	setTextScreenList,
+	showScreenList
+} from "shared/services/screens-service.module";
 import { TimerService } from "shared/services/timer-service.module";
 import { Phone } from "./phone/phone.module";
 import { Stores } from "shared/stores/stores.module";
 import { HAND_PLAYER, MATCH_STATE } from "shared/stores/match-store.module";
 import { SlotLine } from "./slot-line/slot-line.module";
 import { PlayerHand } from "./player-hand/player-hand.module";
+import { playerDiesEvent } from "shared/services/player-game-service.module";
+import { ClockService } from "shared/services/clock-service.module";
 
 export class MatchGom extends MyMaid {
 	private root: Folder;
-	private clock!: TimerService;
+	private clock!: ClockService;
 	private phone!: Phone;
 	private desk!: SlotLine;
 	private stage!: SlotLine;
@@ -20,6 +27,11 @@ export class MatchGom extends MyMaid {
 		super();
 		this.root = root;
 	}
+
+	onPlayerDied(cb: (playerId: number) => void) {
+		this.maidConnection(playerDiesEvent.Event, cb);
+	}
+
 	onPlayerRemoved(cb: (player: Player) => void) {
 		const pS = game.GetService("Players");
 		this.maidConnection(pS.PlayerRemoving, cb);
@@ -34,7 +46,7 @@ export class MatchGom extends MyMaid {
 	hideTimer() {
 		const screensFolder = findElement<Folder>(this.root, "Screens");
 		const screenParts = screensFolder.GetChildren() as Part[];
-
+		setTextScreenList(screenParts, MATCH_TIME + "");
 		hideScreenList(screenParts);
 	}
 
@@ -81,7 +93,7 @@ export class MatchGom extends MyMaid {
 		winSound.Play();
 	}
 	createTimer() {
-		if (!this.clock) this.clock = new TimerService();
+		if (!this.clock) this.clock = new ClockService();
 	}
 
 	startTimer() {
@@ -98,7 +110,7 @@ export class MatchGom extends MyMaid {
 
 	onOneSecTimer(cb: (sec: number) => void) {
 		this.createTimer();
-		this.clock.onOneSecComplementDo(cb);
+		this.clock.onOneSecDo(cb);
 	}
 
 	onTimerCompleted(cb: () => void) {

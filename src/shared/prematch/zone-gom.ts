@@ -4,7 +4,8 @@ import { findElement } from "shared/services/gom-service.module";
 import {
 	getCharacterFromUserId,
 	getUserIdFromPlayerCharacter,
-	isPlayerUpperTorso
+	isPlayerUpperTorso,
+	playerDiesEvent
 } from "shared/services/player-game-service.module";
 
 export class ZoneGom extends MyMaid {
@@ -13,9 +14,14 @@ export class ZoneGom extends MyMaid {
 	private connectionExit!: RBXScriptConnection;
 	private changeEvent!: BindableEvent;
 	private playerRemoveConnection!: RBXScriptConnection;
+	private playerDiesConnection!: RBXScriptConnection;
 	constructor(part: Part) {
 		super();
 		this.part = part;
+	}
+
+	onPlayerDied(cb: (playerId: number) => void) {
+		this.maidConnection(playerDiesEvent.Event, cb);
 	}
 
 	onPlayerRemoved(cb: (player: Player) => void) {
@@ -55,6 +61,10 @@ export class ZoneGom extends MyMaid {
 
 	removeOnPlayerRemoved() {
 		this.playerRemoveConnection.Disconnect();
+	}
+
+	removeOnPlayerDies() {
+		this.playerDiesConnection.Disconnect();
 	}
 
 	blockPlayerJump(userId: number) {

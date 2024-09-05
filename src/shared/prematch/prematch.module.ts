@@ -11,6 +11,7 @@ export class Prematch extends MyMaid {
 		this.id = id;
 
 		this.gom = new PrematchGom(instance as Folder);
+		this.gom.createTimer();
 		this.gom.hideTimer();
 		this.gom.createZone();
 		this.gom.onZoneFirstPlayerEnter(() => {
@@ -27,11 +28,9 @@ export class Prematch extends MyMaid {
 		this.gom.onTimerCompleted(() => {
 			this.gom.closePrematch();
 			this.gom.hideTimer();
-			wait(3);
 
 			const playersInZone = this.gom.getPlayersInZone().size();
 			if (playersInZone > 0) {
-				//to ensure there are players in the zone
 				this.gom.endZone();
 				this.gom.fireFinishedEvent();
 			} else {

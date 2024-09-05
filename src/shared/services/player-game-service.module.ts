@@ -1,6 +1,8 @@
 import { PLAYER_CHARACTER_TAG, PLAYER_UPPER_TORSO_TAG } from "shared/constants.module";
 import { setTagToChildNamed } from "./tags-service.module";
 
+export const playerDiesEvent = new Instance("BindableEvent");
+
 export const isPlayerUpperTorso = (possibleTorso: unknown) => {
 	const possiblePlayer = <unknown>(possibleTorso as Instance).Parent;
 
@@ -9,20 +11,32 @@ export const isPlayerUpperTorso = (possibleTorso: unknown) => {
 	const isPlayer = tags.some((tag) => tag === PLAYER_CHARACTER_TAG);
 
 	if (isPlayer) {
-		return (possibleTorso as Instance).Name === "UpperTorso";
+		const isUpperTorso = (possibleTorso as Instance).Name === "UpperTorso";
+		if (isUpperTorso) {
+			const character = (possibleTorso as Instance).Parent as Model;
+
+			const humanoid = character.FindFirstChild("Humanoid") as Humanoid;
+			const belongsToAlivePlayer = humanoid.Health > 0;
+
+			return belongsToAlivePlayer;
+		}
 	}
 
 	return false;
 };
 
 export function onCharacterAdded(character: Model) {
-	//const player = Players.GetPlayerFromCharacter(character);
+	const humanoid = character.WaitForChild("Humanoid") as Humanoid;
+	humanoid.Died.Connect(() => {
+		const userId = getUserIdFromPlayerCharacter(character);
+		playerDiesEvent.Fire(userId);
+	});
+
 	character.AddTag(PLAYER_CHARACTER_TAG);
 	setTagToChildNamed(character, PLAYER_UPPER_TORSO_TAG, "UpperTorso");
 }
 
 export function onPlayerAdded(player: Player) {
-	print("player added ", player.Name);
 	player.CharacterAdded.Connect(onCharacterAdded);
 }
 

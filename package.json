@@ -27,6 +27,7 @@
     "@rbxts/binder": "^6.0.0-ts.3",
     "@rbxts/deepcopy": "^0.1.3",
     "@rbxts/maid": "^1.1.0",
-    "@rbxts/observer": "^0.1.4"
+    "@rbxts/observer": "^0.1.4",
+    "@rbxts/set-timeout": "^1.1.2"
   }
 }

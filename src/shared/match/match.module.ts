@@ -33,6 +33,11 @@ export class Match extends MyMaid {
 			this.stores.removePlayerMatchByUserId(userId);
 		});
 
+		this.gom.onPlayerDied((playerId: number) => {
+			const userId = playerId;
+			this.stores.removePlayerMatchByUserId(userId);
+		});
+
 		this.playerInteractionEvent = this.gom.getPlayerInteractionEvent();
 		this.finishedEvent = this.gom.getFinishedEvent();
 		this.gom.hideTimer();

@@ -1,3 +1,5 @@
+import { findElement } from "./gom-service.module";
+
 export const displayInScreenList = (screens: Part[], message: string) => {
 	screens.forEach((screen) => {
 		const textLabel = screen.FindFirstChild("TextLabel", true) as TextLabel;
@@ -25,6 +27,18 @@ export const hideScreenList = (screens: Part[]) => {
 
 	surfaceGuis.forEach((surfaceGui) => {
 		surfaceGui.Enabled = false;
+	});
+};
+
+export const setTextScreenList = (screens: Part[], text: string) => {
+	const surfaceGuis = screens.map((screen) => {
+		const surfaceGui = findElement<SurfaceGui>(screen, "SurfaceGui");
+		return surfaceGui;
+	}) as SurfaceGui[];
+
+	surfaceGuis.forEach((surfaceGui) => {
+		const textLabel = <TextLabel>findElement(surfaceGui, "TextLabel");
+		textLabel.Text = text;
 	});
 };
 

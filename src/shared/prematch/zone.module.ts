@@ -1,16 +1,32 @@
 import { MyMaid } from "shared/maid/my-maid.module";
 import { ZoneGom } from "./zone-gom";
-import { getUserIdFromPlayerCharacter } from "shared/services/player-game-service.module";
 
 export class Zone extends MyMaid {
 	private gom: ZoneGom;
 	private playersInside: number[] = [];
+	private activeTouches: { userId: number; tick: number }[] = [];
+	private debounceTime = 0.35;
 
 	constructor(zonePart: Part) {
 		super();
 		this.gom = new ZoneGom(zonePart);
 	}
 	init() {
+		this.gom.onPlayerDied((playerId: number) => {
+			const userId = playerId;
+			const isPlayerInZone = this.playersInside.some((pId) => pId === userId);
+
+			if (isPlayerInZone) {
+				this.playersInside = this.playersInside.filter((pUid) => userId !== pUid);
+				this.activeTouches = this.activeTouches.filter((aT) => aT.userId !== userId);
+				if (this.playersInside.size() === 0) {
+					this.gom.fireChangeLastPlayerExit();
+				} else {
+					print("there is still players inside the zone");
+				}
+			}
+		});
+
 		this.gom.triggerOnPlayerEnter((userId) => {
 			const playerAlreadyPushed = this.playersInside.some((player) => player === userId);
 
@@ -18,6 +34,8 @@ export class Zone extends MyMaid {
 				this.gom.blockPlayerJump(userId);
 
 				this.playersInside.push(userId);
+				this.activeTouches.push({ userId, tick: tick() });
+
 				if (this.playersInside.size() === 1) {
 					this.gom.fireChangeFirstPlayerEnter();
 				}
@@ -25,11 +43,12 @@ export class Zone extends MyMaid {
 		});
 
 		this.gom.triggerOnPlayerExit((userId) => {
-			print("player exit ", userId);
 			const playerExist = this.playersInside.some((player) => player === userId);
-			if (playerExist) {
+			const lastTouch = this.activeTouches.find((aT) => aT.userId === userId) || { userId, tick: 0 };
+			if (playerExist && tick() - lastTouch.tick > this.debounceTime) {
 				this.gom.allowPlayerJump(userId);
 				this.playersInside = this.playersInside.filter((player) => player !== userId);
+				this.activeTouches = this.activeTouches.filter((aT) => aT.userId !== userId);
 
 				if (this.playersInside.size() === 0) {
 					this.gom.fireChangeLastPlayerExit();
@@ -44,6 +63,7 @@ export class Zone extends MyMaid {
 
 			if (isPlayerInZone) {
 				this.playersInside = this.playersInside.filter((pUid) => userId !== pUid);
+				this.activeTouches = this.activeTouches.filter((aT) => aT.userId !== userId);
 				if (this.playersInside.size() === 0) {
 					this.gom.fireChangeLastPlayerExit();
 				} else {
