@@ -27,6 +27,7 @@ export class Match extends MyMaid {
 		this.stageGoal = generateGoalCombination();
 		print("Match --- ");
 		this.gom = new MatchGom(instance as Folder);
+		this.gom.createTimer();
 
 		this.gom.onPlayerRemoved((player: Player) => {
 			const userId = player.UserId;
@@ -66,6 +67,7 @@ export class Match extends MyMaid {
 
 		this.gom.onMatchStateChange(this.stores, (data) => {
 			if (data.handPlayers.size() === 0) {
+				this.gom.stopTimer();
 				this.finishedEvent.Fire(MATCH_FINISH.ABORT);
 				return;
 			}

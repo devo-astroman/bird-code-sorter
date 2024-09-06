@@ -97,24 +97,20 @@ export class MatchGom extends MyMaid {
 	}
 
 	startTimer() {
-		this.createTimer();
 		this.clock.startTime(MATCH_TIME);
 		this.showTimer();
 	}
 
 	stopTimer() {
-		this.createTimer();
 		this.clock.stop();
 		this.hideTimer();
 	}
 
 	onOneSecTimer(cb: (sec: number) => void) {
-		this.createTimer();
 		this.clock.onOneSecDo(cb);
 	}
 
 	onTimerCompleted(cb: () => void) {
-		this.createTimer();
 		this.clock.onTimeCompleted(cb);
 	}
 
