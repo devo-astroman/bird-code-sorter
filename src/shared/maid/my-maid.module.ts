@@ -6,7 +6,10 @@ export abstract class MyMaid {
 	abstract prepareMaid(): void;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	addListToMaid(list: ({ Destroy: () => void } | RBXScriptConnection)[]) {
+	addListToMaid(list: ({ Destroy: () => void } | RBXScriptConnection)[], msg?: string) {
+		// eslint-disable-next-line roblox-ts/lua-truthiness
+		if (!msg) msg = ".";
+		print("maid msg ", msg);
 		print("adding to maid ", list);
 		list.forEach((element) => {
 			// eslint-disable-next-line roblox-ts/lua-truthiness

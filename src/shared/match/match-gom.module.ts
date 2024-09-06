@@ -233,7 +233,7 @@ export class MatchGom extends MyMaid {
 
 	prepareMaid(): void {
 		const list = [this.clock, this.desk, this.stage, this.phone, ...this.playersHand];
-		this.addListToMaid(list);
+		this.addListToMaid(list, "match gom");
 		//nothing to add
 	}
 }

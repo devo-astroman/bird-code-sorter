@@ -4,12 +4,10 @@ import { ZoneGom } from "./zone-gom";
 export class Zone extends MyMaid {
 	private gom: ZoneGom;
 	private playersInside: number[] = [];
-	private activeTouches: { userId: number; tick: number }[] = [];
-	private debounceTime = 0.35;
 
-	constructor(zonePart: Part) {
+	constructor(zonePart: Instance) {
 		super();
-		this.gom = new ZoneGom(zonePart);
+		this.gom = new ZoneGom(zonePart as Part);
 	}
 	init() {
 		this.gom.onPlayerDied((playerId: number) => {
@@ -18,7 +16,6 @@ export class Zone extends MyMaid {
 
 			if (isPlayerInZone) {
 				this.playersInside = this.playersInside.filter((pUid) => userId !== pUid);
-				this.activeTouches = this.activeTouches.filter((aT) => aT.userId !== userId);
 				if (this.playersInside.size() === 0) {
 					this.gom.fireChangeLastPlayerExit();
 				} else {
@@ -31,10 +28,7 @@ export class Zone extends MyMaid {
 			const playerAlreadyPushed = this.playersInside.some((player) => player === userId);
 
 			if (!playerAlreadyPushed) {
-				this.gom.blockPlayerJump(userId);
-
 				this.playersInside.push(userId);
-				this.activeTouches.push({ userId, tick: tick() });
 
 				if (this.playersInside.size() === 1) {
 					this.gom.fireChangeFirstPlayerEnter();
@@ -44,11 +38,8 @@ export class Zone extends MyMaid {
 
 		this.gom.triggerOnPlayerExit((userId) => {
 			const playerExist = this.playersInside.some((player) => player === userId);
-			const lastTouch = this.activeTouches.find((aT) => aT.userId === userId) || { userId, tick: 0 };
-			if (playerExist && tick() - lastTouch.tick > this.debounceTime) {
-				this.gom.allowPlayerJump(userId);
+			if (playerExist) {
 				this.playersInside = this.playersInside.filter((player) => player !== userId);
-				this.activeTouches = this.activeTouches.filter((aT) => aT.userId !== userId);
 
 				if (this.playersInside.size() === 0) {
 					this.gom.fireChangeLastPlayerExit();
@@ -63,7 +54,6 @@ export class Zone extends MyMaid {
 
 			if (isPlayerInZone) {
 				this.playersInside = this.playersInside.filter((pUid) => userId !== pUid);
-				this.activeTouches = this.activeTouches.filter((aT) => aT.userId !== userId);
 				if (this.playersInside.size() === 0) {
 					this.gom.fireChangeLastPlayerExit();
 				} else {
@@ -85,14 +75,14 @@ export class Zone extends MyMaid {
 		return this.playersInside;
 	}
 
+	getChangeEvent() {
+		return this.gom.getChangeEvent();
+	}
+
 	end() {
 		this.gom.removeTriggerOnPlayerEnter();
 		this.gom.removeTriggerOnPlayerExit();
 		this.gom.removeOnPlayerRemoved();
-
-		this.playersInside.forEach((playerCharacter) => {
-			this.gom.allowPlayerJump(playerCharacter);
-		});
 	}
 	prepareMaid(): void {
 		this.addListToMaid([this.gom]);

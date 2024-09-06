@@ -182,6 +182,6 @@ export class Match extends MyMaid {
 	prepareMaid(): void {
 		//improve all the connections
 		this.connections.forEach((conn) => conn.Disconnect());
-		this.addListToMaid([this.gom]);
+		this.addListToMaid([this.gom], "match");
 	}
 }

@@ -28,6 +28,7 @@
     "@rbxts/deepcopy": "^0.1.3",
     "@rbxts/maid": "^1.1.0",
     "@rbxts/observer": "^0.1.4",
-    "@rbxts/set-timeout": "^1.1.2"
+    "@rbxts/set-timeout": "^1.1.2",
+    "@rbxts/zone-plus": "^3.2.0"
   }
 }

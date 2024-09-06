@@ -1,14 +1,12 @@
+import { Zone } from "@rbxts/zone-plus";
 import { PLAYER_JUMP_HEIGHT } from "shared/constants.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { findElement } from "shared/services/gom-service.module";
-import {
-	getCharacterFromUserId,
-	getUserIdFromPlayerCharacter,
-	isPlayerUpperTorso,
-	playerDiesEvent
-} from "shared/services/player-game-service.module";
+import { getCharacterFromUserId, playerDiesEvent } from "shared/services/player-game-service.module";
 
 export class ZoneGom extends MyMaid {
+	private zone: Zone;
+
 	private part: Part;
 	private connectionEnter!: RBXScriptConnection;
 	private connectionExit!: RBXScriptConnection;
@@ -18,6 +16,7 @@ export class ZoneGom extends MyMaid {
 	constructor(part: Part) {
 		super();
 		this.part = part;
+		this.zone = new Zone(part);
 	}
 
 	onPlayerDied(cb: (playerId: number) => void) {
@@ -30,29 +29,23 @@ export class ZoneGom extends MyMaid {
 	}
 
 	triggerOnPlayerEnter(fn: (playerUserId: number) => void) {
-		const zonePart = this.part;
-		this.connectionEnter = this.maidConnection(zonePart.Touched, (touchedPart: BasePart) => {
-			if (isPlayerUpperTorso(touchedPart)) {
-				const playerCharacter = touchedPart.Parent as Model;
-				const userId = getUserIdFromPlayerCharacter(playerCharacter);
-
-				fn(userId);
-			}
+		this.connectionEnter = this.zone.playerEntered.Connect((player) => {
+			const userId = player.UserId;
+			this.changeEvent.Fire({ event: "PlayerEnter", data: userId });
+			fn(userId);
 		});
-	}
-	removeTriggerOnPlayerEnter() {
-		this.maidDestroyConnection(this.connectionEnter);
 	}
 
 	triggerOnPlayerExit(fn: (playerUserId: number) => void) {
-		const zonePart = this.part;
-		this.connectionExit = this.maidConnection(zonePart.TouchEnded, (touchedPart: BasePart) => {
-			if (isPlayerUpperTorso(touchedPart)) {
-				const playerCharacter = touchedPart.Parent as Model;
-				const userId = getUserIdFromPlayerCharacter(playerCharacter);
-				fn(userId);
-			}
+		this.connectionExit = this.zone.playerExited.Connect((player) => {
+			const userId = player.UserId;
+			this.changeEvent.Fire({ event: "PlayerExit", data: userId });
+			fn(userId);
 		});
+	}
+
+	removeTriggerOnPlayerEnter() {
+		this.maidDestroyConnection(this.connectionEnter);
 	}
 
 	removeTriggerOnPlayerExit() {
@@ -103,7 +96,15 @@ export class ZoneGom extends MyMaid {
 		this.changeEvent.Fire("LastPlayerExit");
 	}
 
+	getChangeEvent() {
+		this.changeEvent = findElement<BindableEvent>(this.part, "ChangeEvent");
+		return this.changeEvent;
+	}
+
 	prepareMaid(): void {
-		this.addListToMaid([this.connectionEnter, this.connectionExit]);
+		this.zone.destroy();
+		/* this.connectionEnter.Disconnect();
+		this.connectionExit.Disconnect(); */
+		//this.addListToMaid([this.connectionEnter, this.connectionExit]);
 	}
 }
