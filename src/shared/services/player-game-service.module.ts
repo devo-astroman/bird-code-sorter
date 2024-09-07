@@ -1,5 +1,6 @@
-import { PLAYER_CHARACTER_TAG, PLAYER_UPPER_TORSO_TAG } from "shared/constants.module";
+import { PLAYER_CHARACTER_TAG, PLAYER_IN_PREMATCH_CG, PLAYER_UPPER_TORSO_TAG } from "shared/constants.module";
 import { setTagToChildNamed } from "./tags-service.module";
+import { findElement } from "./gom-service.module";
 
 export const playerDiesEvent = new Instance("BindableEvent");
 
@@ -85,6 +86,28 @@ export const getHumanoidFromUserId = (userId: number) => {
 	const humanoid = character.FindFirstChild("Humanoid", true) as Humanoid;
 
 	return humanoid;
+};
+
+export const addPlayerToColliderGroupPrematchCG = (userId: number) => {
+	const character = getCharacterFromUserId(userId);
+	const humanoid = findElement(character, "HumanoidRootPart") as Part;
+	const upperTorso = findElement(character, "UpperTorso") as MeshPart;
+	const lowerTorso = findElement(character, "LowerTorso") as MeshPart;
+
+	humanoid.CollisionGroup = PLAYER_IN_PREMATCH_CG;
+	upperTorso.CollisionGroup = PLAYER_IN_PREMATCH_CG;
+	lowerTorso.CollisionGroup = PLAYER_IN_PREMATCH_CG;
+};
+
+export const removePlayerFromColliderGroupPrematchCG = (userId: number) => {
+	const character = getCharacterFromUserId(userId);
+	const humanoid = findElement(character, "HumanoidRootPart") as Part;
+	const upperTorso = findElement(character, "UpperTorso") as MeshPart;
+	const lowerTorso = findElement(character, "LowerTorso") as MeshPart;
+
+	humanoid.CollisionGroup = "Default";
+	upperTorso.CollisionGroup = "Default";
+	lowerTorso.CollisionGroup = "Default";
 };
 
 export const matchUserIds = (userIds: number[], playersInGame: { userId: number }[]) => {

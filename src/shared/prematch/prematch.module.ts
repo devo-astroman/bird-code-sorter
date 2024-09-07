@@ -1,3 +1,4 @@
+import { MAX_PLAYERS_BY_MATCH } from "shared/constants.module";
 import { PrematchGom } from "./prematch-gom";
 import { MyMaid } from "shared/maid/my-maid.module";
 
@@ -14,6 +15,8 @@ export class Prematch extends MyMaid {
 		this.gom.createTimer();
 		this.gom.hideTimer();
 		this.gom.createZone();
+		this.gom.managePlayerTags(MAX_PLAYERS_BY_MATCH);
+
 		this.gom.onZoneFirstPlayerEnter(() => {
 			this.gom.startTimer();
 		});
@@ -22,7 +25,8 @@ export class Prematch extends MyMaid {
 		});
 
 		this.gom.onOneSecTimer((sec: number) => {
-			this.gom.displaySecs(sec);
+			const nPlayers = this.gom.getNPlayersInZone();
+			this.gom.displaySecs(sec, nPlayers);
 		});
 
 		this.gom.onTimerCompleted(() => {
@@ -31,6 +35,8 @@ export class Prematch extends MyMaid {
 
 			const playersInZone = this.gom.getPlayersInZone().size();
 			if (playersInZone > 0) {
+				this.gom.removePlayersFromColliderGroup();
+				this.gom.removeTagFromLimitDoor();
 				this.gom.endZone();
 				this.gom.fireFinishedEvent();
 			} else {

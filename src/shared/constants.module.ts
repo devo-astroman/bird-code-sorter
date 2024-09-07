@@ -6,6 +6,10 @@ export const PREMATCH_TAG = "PREMATCH_TAG";
 export const PLAYER_CHARACTER_TAG = "PLAYER_CHARACTER_TAG";
 export const PLAYER_UPPER_TORSO_TAG = "PLAYER_UPPER_TORSO_TAG";
 
+export const DOOR_CG = "DOOR_CG";
+export const PLAYER_IN_PREMATCH_CG = "PLAYER_IN_PREMATCH_CG";
+export const MAX_PLAYERS_BY_MATCH = 4; //4
+
 export interface PLAYER_IN_MATCH_DATA {
 	playerCharacter: Model;
 	handValue: SLOT_VALUE;

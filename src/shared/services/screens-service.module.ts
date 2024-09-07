@@ -62,3 +62,9 @@ export const getResetRichTextFormat = (message: string) => {
 	//<font size="38">Congrats!!!</font><br /><font size="35">Time to Reset: <br />5</font>
 	return `<font size="38">Congrats!!!</font><br /><font size="35">Time to Reset:<br />${message}</font>`;
 };
+
+export const getPrematchRichTextFormat = (secs: number, playersInfo: { n: number; max: number }) => {
+	// <font size="35">4 <font size="20">secs</font> to start<br/></font><font size="38">1/4</font>
+	const { n, max } = playersInfo;
+	return `<font size="35">${secs} <font size="20">secs</font> to start<br/></font><font size="38">${n}/${max}</font>`;
+};
