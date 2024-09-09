@@ -50,7 +50,9 @@ export enum ID_SLOTS {
 }
 export const ID_SLOTS_INDEX = [ID_SLOTS.FIRST, ID_SLOTS.SECOND, ID_SLOTS.THIRD, ID_SLOTS.FOURTH];
 
+export const SLOT_VALUE_HEXS = ["#000000", "#FF0000", "#00FF00", "#0000FF", "#800080"];
 export const SLOT_VALUE_STRINGS = ["EMPTY", "RED", "GREEN", "BLUE", "PURPLE"];
+export const SLOT_VALUE_STRINGS_INITIALS = ["E", "R", "G", "B", "P"];
 export const SLOT_VALUE_COLORS = [
 	new Color3(0, 0, 0), //EMPTY - BLACK
 	new Color3(1, 0, 0), //RED
@@ -59,12 +61,17 @@ export const SLOT_VALUE_COLORS = [
 	new Color3(0.502, 0, 0.502) //PURPLE
 ];
 
-export const PREMATCH_TIME = 15; //15
-export const MATCH_TIME = 60; //60
+export const PREMATCH_TIME = 5; //15
+export const MATCH_TIME = 180; //60
 export const RESET_TIME = 5; //5
 export const KILL_TIME = 5; //5
 
 export const PLAYER_JUMP_HEIGHT = 7.2;
+
+export interface LOG_ENTRY {
+	combination: SLOT_VALUE[];
+	nCorrects: number;
+}
 
 export interface STATE_MODIFICACION_DATA {
 	updated: boolean;

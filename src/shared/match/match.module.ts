@@ -51,6 +51,7 @@ export class Match extends MyMaid {
 			print("stageGoal ");
 			printSlotInString(this.stageGoal);
 			const nCorrects = countSamePositions(stageValues, this.stageGoal);
+			this.gom.saveLog(stageValues, nCorrects);
 
 			this.gom.playSoundNTimes(nCorrects);
 

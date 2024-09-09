@@ -1,3 +1,4 @@
+import { LOG_ENTRY, SLOT_VALUE, SLOT_VALUE_HEXS, SLOT_VALUE_STRINGS_INITIALS } from "shared/constants.module";
 import { findElement } from "./gom-service.module";
 
 export const displayInScreenList = (screens: Part[], message: string) => {
@@ -67,4 +68,27 @@ export const getPrematchRichTextFormat = (secs: number, playersInfo: { n: number
 	// <font size="35">4 <font size="20">secs</font> to start<br/></font><font size="38">1/4</font>
 	const { n, max } = playersInfo;
 	return `<font size="35">${secs} <font size="20">secs</font> to start<br/></font><font size="38">${n}/${max}</font>`;
+};
+
+const getCombinationRichTextFormat = (combination: SLOT_VALUE[]) => {
+	//<font size="20" color="#FF0000">R</font> <font size="20" color="#00FF00">G</font> <font size="20" color="#0000FF">B</font> <font size="20" color="#800080">P</font>
+	let lineCombination = "";
+	combination.forEach((sv) => {
+		lineCombination += `<font size="20" color="${SLOT_VALUE_HEXS[sv]}">${SLOT_VALUE_STRINGS_INITIALS[sv]}</font>`;
+	});
+
+	return lineCombination;
+};
+
+export const getHistoryLogRichTextFormat = (log: LOG_ENTRY[]) => {
+	let text = "";
+	log.forEach((dataLine, i) => {
+		const combinationRichText = getCombinationRichTextFormat(dataLine.combination);
+
+		const line = `<font size="12" color="#FF0000">${i + 1}</font><stroke color="#000000">${combinationRichText}</stroke><font size="18" color="#000000">${dataLine.nCorrects}</font><br/>`;
+
+		text += line;
+	});
+
+	return text;
 };

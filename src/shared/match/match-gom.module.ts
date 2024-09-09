@@ -1,13 +1,13 @@
-import { ID_SLOTS, LOCATION, MATCH_TIME, SLOT_VALUE } from "shared/constants.module";
+import { ID_SLOTS, LOCATION, LOG_ENTRY, MATCH_TIME, SLOT_VALUE } from "shared/constants.module";
 import { MyMaid } from "shared/maid/my-maid.module";
 import { findElement } from "shared/services/gom-service.module";
 import {
 	displayInScreenList,
+	getHistoryLogRichTextFormat,
 	hideScreenList,
 	setTextScreenList,
 	showScreenList
 } from "shared/services/screens-service.module";
-import { TimerService } from "shared/services/timer-service.module";
 import { Phone } from "./phone/phone.module";
 import { Stores } from "shared/stores/stores.module";
 import { HAND_PLAYER, MATCH_STATE } from "shared/stores/match-store.module";
@@ -23,6 +23,7 @@ export class MatchGom extends MyMaid {
 	private desk!: SlotLine;
 	private stage!: SlotLine;
 	private playersHand: PlayerHand[] = [];
+	private log: LOG_ENTRY[] = [];
 	constructor(root: Folder) {
 		super();
 		this.root = root;
@@ -229,6 +230,27 @@ export class MatchGom extends MyMaid {
 				this.playersHand.push(handPlayer);
 			}
 		});
+	}
+
+	saveLog(stageValues: SLOT_VALUE[], nCorrects: number) {
+		const newEntry: LOG_ENTRY = { combination: stageValues, nCorrects };
+		if (this.log.size() > 1) {
+			const lastEntry = this.log[this.log.size() - 1];
+			if (lastEntry.combination !== stageValues) {
+				this.log.push(newEntry);
+				this.updateLogScreen();
+			}
+		} else {
+			this.log.push(newEntry);
+			this.updateLogScreen();
+		}
+		print("saveLog ", this.log);
+	}
+
+	updateLogScreen() {
+		const logScreenFolder = findElement<Folder>(this.root, "LogScreen");
+		const textLabel = findElement<TextLabel>(logScreenFolder, "TextLabel");
+		textLabel.Text = getHistoryLogRichTextFormat(this.log);
 	}
 
 	prepareMaid(): void {
