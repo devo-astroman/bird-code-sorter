@@ -72,9 +72,10 @@ export const getPrematchRichTextFormat = (secs: number, playersInfo: { n: number
 
 const getCombinationRichTextFormat = (combination: SLOT_VALUE[]) => {
 	//<font size="20" color="#FF0000">R</font> <font size="20" color="#00FF00">G</font> <font size="20" color="#0000FF">B</font> <font size="20" color="#800080">P</font>
+	// <font size="20" color="#00FF00">G</font><font size="20" color="#FF0000">R</font><font size="20" color="#0000FF">B</font><font size="20" color="#800080">P</font>
 	let lineCombination = "";
 	combination.forEach((sv) => {
-		lineCombination += `<font size="20" color="${SLOT_VALUE_HEXS[sv]}">${SLOT_VALUE_STRINGS_INITIALS[sv]}</font>`;
+		lineCombination += `<font size="40" color="${SLOT_VALUE_HEXS[sv]}">${SLOT_VALUE_STRINGS_INITIALS[sv]}</font>`;
 	});
 
 	return lineCombination;
@@ -85,7 +86,7 @@ export const getHistoryLogRichTextFormat = (log: LOG_ENTRY[]) => {
 	log.forEach((dataLine, i) => {
 		const combinationRichText = getCombinationRichTextFormat(dataLine.combination);
 
-		const line = `<font size="12" color="#FF0000">${i + 1}</font><stroke color="#000000">${combinationRichText}</stroke><font size="18" color="#000000">${dataLine.nCorrects}</font><br/>`;
+		const line = `<font size="24" color="#FFFFFF">${i + 1}</font><stroke color="#000000">${combinationRichText}</stroke><font size="36" color="#FFFFFF">${dataLine.nCorrects}</font><br/>`;
 
 		text += line;
 	});
