@@ -55,6 +55,7 @@ export class Room extends MyMaid {
 
 	init(id: number) {
 		this.id = id;
+		this.gom.setIdValue(id);
 		this.room$.connect((phase) => {
 			if (phase !== undefined) {
 				if (phase === ROOM_PHASE.PREMATCH) {

@@ -8,6 +8,7 @@ import {
 	compareNewStateWithCurrentState
 } from "shared/services/match-evaluator.module";
 import { printSlotInString } from "shared/services/slot-service.module";
+import { notifyAllPlayers } from "shared/services/server-client-comm.module";
 
 export class Match extends MyMaid {
 	private gom: MatchGom;
@@ -28,6 +29,21 @@ export class Match extends MyMaid {
 		print("Match --- ");
 		this.gom = new MatchGom(instance as Folder);
 		this.gom.createTimer();
+
+		this.gom.onCabinetInteract((player: Player) => {
+			print("Linstening to cabinet interactions");
+			//fire to all clients
+			const msg = {
+				type: "ANIMATE",
+				data: {
+					roomId: this.gom.getRoomId(),
+					objectId: "CABINET_DOOR",
+					userId: player.UserId
+				}
+			};
+
+			notifyAllPlayers(msg);
+		});
 
 		this.gom.onPlayerRemoved((player: Player) => {
 			const userId = player.UserId;

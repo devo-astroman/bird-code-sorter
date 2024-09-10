@@ -108,6 +108,11 @@ export class RoomGom extends MyMaid {
 		this.maidConnection(this.loose.getFinishedEvent().Event, cb);
 	}
 
+	setIdValue(id: number) {
+		const numberValue = <NumberValue>findElement(this.root, "Value");
+		numberValue.Value = id;
+	}
+
 	prepareMaid(): void {
 		this.addListToMaid([this.prematch, this.match, this.win, this.loose]);
 	}

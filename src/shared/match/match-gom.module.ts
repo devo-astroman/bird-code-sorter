@@ -253,6 +253,21 @@ export class MatchGom extends MyMaid {
 		textLabel.Text = getHistoryLogRichTextFormat(this.log);
 	}
 
+	onCabinetInteract(cb: (player: Player) => void) {
+		const cabinetFolder = findElement<Folder>(this.root, "Cabinet");
+		const proximityPrompt = findElement<ProximityPrompt>(cabinetFolder, "ProximityPrompt");
+		this.maidConnection(proximityPrompt.Triggered, cb);
+	}
+
+	getRoomId() {
+		const cabinetFolder = findElement<Folder>(this.root, "Cabinet");
+		const objectValue = findElement<ObjectValue>(cabinetFolder, "Value");
+		//IMPROVE!!! this is a smell
+		const roomFolder = objectValue.Value as Folder;
+		const numberValue = findElement<NumberValue>(roomFolder, "Value");
+		return numberValue.Value;
+	}
+
 	prepareMaid(): void {
 		const list = [this.clock, this.desk, this.stage, this.phone, ...this.playersHand];
 		this.addListToMaid(list, "match gom");
