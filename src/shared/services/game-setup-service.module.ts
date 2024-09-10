@@ -22,7 +22,7 @@ export const setupRooms = () => {
 	binder.Start();
 	wait(5);
 
-	binder.GetAll().forEach((element: Room) => {
-		new BirdSorter(element);
+	binder.GetAll().forEach((element: Room, i) => {
+		new BirdSorter(i, element);
 	});
 };

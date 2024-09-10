@@ -3,13 +3,13 @@ import { MATCH_FINISH, ROOM_PHASE } from "shared/constants.module";
 import { Stores } from "shared/stores/stores.module";
 import { RoomGom } from "./room-gom.module";
 import { MyMaid } from "shared/maid/my-maid.module";
-import { getUserIdFromPlayerCharacter } from "shared/services/player-game-service.module";
 
 export class Room extends MyMaid {
 	private stores: Stores;
 	private gom: RoomGom;
 	private room$: Observer<ROOM_PHASE>;
 	private resetEvent: BindableEvent;
+	private id!: number;
 
 	constructor(instance: Instance) {
 		super();
@@ -53,7 +53,8 @@ export class Room extends MyMaid {
 		this.prepareMaid();
 	}
 
-	init() {
+	init(id: number) {
+		this.id = id;
 		this.room$.connect((phase) => {
 			if (phase !== undefined) {
 				if (phase === ROOM_PHASE.PREMATCH) {
@@ -83,6 +84,10 @@ export class Room extends MyMaid {
 
 	getRootInstace() {
 		return this.gom.getInstace();
+	}
+
+	getRoomId() {
+		return this.id;
 	}
 
 	prepareMaid() {
