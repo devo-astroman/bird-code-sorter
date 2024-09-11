@@ -1,5 +1,6 @@
 import { findElement, findElementShallow } from "shared/services/gom-service.module";
 import { onClientReceiveMsg } from "shared/services/server-client-comm.module";
+import { AnimatorManager } from "../animator-manager/animator-manater.module";
 
 const w = game.GetService("Workspace");
 const worldFolder = findElement(w, "World");
@@ -8,6 +9,8 @@ const worldChildren = worldFolder.GetChildren();
 /* to test run animation for certain players
 const pS = game.GetService("Players");
 const currentUserId = pS.LocalPlayer.UserId; */
+
+const animatorManager = new AnimatorManager();
 
 export const setupAnimations = () => {
 	onClientReceiveMsg((msg) => {
@@ -34,13 +37,6 @@ export const setupAnimations = () => {
 			print("Warning not room found with that id");
 		}
 
-		//TODO: Improve, modulate the code
-		const matchFolder = findElementShallow<Folder>(roomFolder as Folder, "Match");
-		const cabinetFolder = findElementShallow<Folder>(matchFolder, "Cabinet");
-		const cabinetDoor = findElementShallow<Folder>(cabinetFolder, "cabinet_door");
-		const animator = findElement<Animator>(cabinetDoor, "Animator");
-		const animation = findElement<Animation>(cabinetDoor, "Animation");
-		const track = animator.LoadAnimation(animation);
-		track.Play();
+		animatorManager.playCabinetAnimation(idRoom);
 	});
 };
