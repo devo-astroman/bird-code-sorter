@@ -1,6 +1,6 @@
 import { ID_SLOTS, LOCATION, LOG_ENTRY, MATCH_TIME, SLOT_VALUE } from "shared/constants.module";
 import { MyMaid } from "shared/maid/my-maid.module";
-import { findElement } from "shared/services/gom-service.module";
+import { findElement, findElementShallow } from "shared/services/gom-service.module";
 import {
 	displayInScreenList,
 	getHistoryLogRichTextFormat,
@@ -15,6 +15,7 @@ import { SlotLine } from "./slot-line/slot-line.module";
 import { PlayerHand } from "./player-hand/player-hand.module";
 import { playerDiesEvent } from "shared/services/player-game-service.module";
 import { ClockService } from "shared/services/clock-service.module";
+import { onServerReceiveMsg } from "shared/services/server-client-comm.module";
 
 export class MatchGom extends MyMaid {
 	private root: Folder;
@@ -24,6 +25,8 @@ export class MatchGom extends MyMaid {
 	private stage!: SlotLine;
 	private playersHand: PlayerHand[] = [];
 	private log: LOG_ENTRY[] = [];
+	/* private cabinetInteractionConnection!: RBXScriptConnection;
+	private paperInteractionConnection!: RBXScriptConnection; */
 	constructor(root: Folder) {
 		super();
 		this.root = root;
@@ -255,8 +258,50 @@ export class MatchGom extends MyMaid {
 
 	onCabinetInteract(cb: (player: Player) => void) {
 		const cabinetFolder = findElement<Folder>(this.root, "Cabinet");
-		const proximityPrompt = findElement<ProximityPrompt>(cabinetFolder, "ProximityPrompt");
+		const cabinetDoorModel = findElementShallow<Model>(cabinetFolder, "cabinet_door");
+		const doorMesh = findElementShallow<MeshPart>(cabinetDoorModel, "door");
+		const proximityPrompt = findElement<ProximityPrompt>(doorMesh, "ProximityPrompt");
+		//this.cabinetInteractionConnection = proximityPrompt.Triggered.Connect(cb);
 		this.maidConnection(proximityPrompt.Triggered, cb);
+	}
+
+	removeCabinetInteraction() {
+		//this.cabinetInteractionConnection.Disconnect();
+		const cabinetFolder = findElement<Folder>(this.root, "Cabinet");
+		const cabinetDoorModel = findElementShallow<Model>(cabinetFolder, "cabinet_door");
+		const doorMesh = findElementShallow<MeshPart>(cabinetDoorModel, "door");
+		const proximityPrompt = findElement<ProximityPrompt>(doorMesh, "ProximityPrompt");
+		proximityPrompt.Enabled = false;
+	}
+
+	activatePaperInteraction() {
+		const cabinetFolder = findElement<Folder>(this.root, "Cabinet");
+		const cabinetDoorModel = findElementShallow<Model>(cabinetFolder, "cabinet_door");
+		const paperMesh = findElementShallow<MeshPart>(cabinetDoorModel, "Paper");
+		const proximityPrompt = findElement<ProximityPrompt>(paperMesh, "ProximityPrompt");
+		/* print("proximityPrompt ", proximityPrompt); */
+		proximityPrompt.Enabled = true;
+
+		/* const cabinetFolder = findElement<Folder>(this.root, "Cabinet");
+		const proximityPrompt = findElement<ProximityPrompt>(cabinetFolder, "ProximityPrompt");
+		this.cabinetInteractionConnection = proximityPrompt.Triggered.Connect(cb); */
+	}
+
+	onPaperInteraction(cb: (player: Player) => void) {
+		const cabinetFolder = findElement<Folder>(this.root, "Cabinet");
+		const cabinetDoorModel = findElementShallow<Model>(cabinetFolder, "cabinet_door");
+		const paperMesh = findElementShallow<MeshPart>(cabinetDoorModel, "Paper");
+		const proximityPrompt = findElement<ProximityPrompt>(paperMesh, "ProximityPrompt");
+		//this.paperInteractionConnection = proximityPrompt.Triggered.Connect(cb);
+		this.maidConnection(proximityPrompt.Triggered, cb);
+	}
+
+	deactivatePaperInteraction() {
+		const cabinetFolder = findElement<Folder>(this.root, "Cabinet");
+		const cabinetDoorModel = findElementShallow<Model>(cabinetFolder, "cabinet_door");
+		const paperMesh = findElementShallow<MeshPart>(cabinetDoorModel, "Paper");
+		const proximityPrompt = findElement<ProximityPrompt>(paperMesh, "ProximityPrompt");
+		proximityPrompt.Enabled = false;
 	}
 
 	getRoomId() {
@@ -266,6 +311,17 @@ export class MatchGom extends MyMaid {
 		const roomFolder = objectValue.Value as Folder;
 		const numberValue = findElement<NumberValue>(roomFolder, "Value");
 		return numberValue.Value;
+	}
+
+	onPlayerClosePaperGui(cb: (player: Player, msg: { type: string; data: unknown }) => void) {
+		onServerReceiveMsg((player: Player, ...args: unknown[]) => {
+			//think about improve this, the match should no access the method onServerReceiveMsg directly
+			const msg = args[0] as { type: string; data: unknown };
+
+			if (msg.type === "PAPER_GUI_CLOSED") {
+				cb(player, msg);
+			}
+		});
 	}
 
 	prepareMaid(): void {

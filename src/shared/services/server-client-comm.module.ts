@@ -15,6 +15,19 @@ export const onClientReceiveMsg = (cb: (msg: { type: string; data: unknown }) =>
 	maid.GiveTask(connection);
 };
 
+export const notifySpecificPlayer = (player: Player, msg: { type: string; data: unknown }) => {
+	remoteEvent.FireClient(player, msg);
+};
+
+export const notifyServer = (msg: { type: string; data: unknown }) => {
+	remoteEvent.FireServer(msg);
+};
+
+export const onServerReceiveMsg = (cb: (player: Player, ...args: unknown[]) => void) => {
+	const connection = remoteEvent.OnServerEvent.Connect(cb);
+	maid.GiveTask(connection);
+};
+
 export const destroyServerClientComm = () => {
 	maid.Destroy();
 };

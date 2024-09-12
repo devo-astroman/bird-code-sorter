@@ -8,7 +8,7 @@ import {
 	compareNewStateWithCurrentState
 } from "shared/services/match-evaluator.module";
 import { printSlotInString } from "shared/services/slot-service.module";
-import { notifyAllPlayers } from "shared/services/server-client-comm.module";
+import { notifyAllPlayers, notifySpecificPlayer } from "shared/services/server-client-comm.module";
 
 export class Match extends MyMaid {
 	private gom: MatchGom;
@@ -32,6 +32,8 @@ export class Match extends MyMaid {
 
 		this.gom.onCabinetInteract((player: Player) => {
 			print("Linstening to cabinet interactions");
+
+			this.gom.removeCabinetInteraction();
 			//fire to all clients
 			const msg = {
 				type: "ANIMATE",
@@ -42,6 +44,36 @@ export class Match extends MyMaid {
 				}
 			};
 
+			this.gom.removeCabinetInteraction();
+			//---------continue here, add the paper interaction
+
+			this.gom.onPlayerClosePaperGui(
+				(
+					player: Player,
+					msg: {
+						type: string;
+						data: unknown;
+					}
+				) => {
+					this.gom.activatePaperInteraction();
+				}
+			);
+
+			this.gom.onPaperInteraction((player: Player) => {
+				//notify the specific player to show the paper UI
+				this.gom.deactivatePaperInteraction();
+				const msgPaper = {
+					type: "GUI",
+					data: {
+						objectId: "PAPER",
+						userId: player.UserId
+					}
+				};
+
+				notifySpecificPlayer(player, msgPaper);
+			});
+
+			this.gom.activatePaperInteraction();
 			notifyAllPlayers(msg);
 		});
 
