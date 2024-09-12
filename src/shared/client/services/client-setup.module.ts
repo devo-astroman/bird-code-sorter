@@ -42,10 +42,18 @@ export const setupAnimations = () => {
 			}
 
 			animatorManager.playCabinetAnimation(idRoom);
+		} else if (msg.type === "RESET_ANIMATE") {
+			const data = msg.data as {
+				roomId: number;
+				objectId: string;
+			};
+			const idRoom = data.roomId;
+			animatorManager.resetCabinetAnimation(idRoom);
 		} else if (msg.type === "GUI") {
 			const data = msg.data as {
 				objectId: string;
 				userId: number;
+				tip: string[];
 			};
 
 			//remove player Movement
@@ -65,42 +73,7 @@ export const setupAnimations = () => {
 				notifyServer(msg);
 			};
 
-			uiManager.showPaper(pS.LocalPlayer, onGuiPaperBackButtonClickCb);
+			uiManager.showPaper(pS.LocalPlayer, data.tip.join(), onGuiPaperBackButtonClickCb);
 		}
-	});
-};
-
-export const setupUI = () => {
-	onClientReceiveMsg((msg) => {
-		print("MESSAGE IN CLIENT****: ", msg);
-		const data = msg.data as {
-			objectId: string;
-			userId: number;
-		};
-
-		//remove player Movement
-		const humanoid = getHumanoidFromUserId(data.userId);
-		humanoid.WalkSpeed = 0;
-
-		//display the UI of the paper
-		/* const pS = game.GetService("Players");
-		uiManager.showPaper(pS.LocalPlayer); */
-		//notify the server when the player had closed the paper
-
-		/* const roomFolder = worldChildren
-			.filter((child) => {
-				const isFolder = child.IsA("Folder");
-				return isFolder;
-			})
-			.find((child) => {
-				const numberValue = findElementShallow<NumberValue>(child, "Value");
-				return numberValue.Value === idRoom;
-			});
-
-		if (!roomFolder) {
-			print("Warning not room found with that id");
-		}
-
-		animatorManager.playCabinetAnimation(idRoom); */
 	});
 };

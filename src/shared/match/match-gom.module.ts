@@ -265,6 +265,15 @@ export class MatchGom extends MyMaid {
 		this.maidConnection(proximityPrompt.Triggered, cb);
 	}
 
+	activateCabinetInteraction() {
+		//this.cabinetInteractionConnection.Disconnect();
+		const cabinetFolder = findElement<Folder>(this.root, "Cabinet");
+		const cabinetDoorModel = findElementShallow<Model>(cabinetFolder, "cabinet_door");
+		const doorMesh = findElementShallow<MeshPart>(cabinetDoorModel, "door");
+		const proximityPrompt = findElement<ProximityPrompt>(doorMesh, "ProximityPrompt");
+		proximityPrompt.Enabled = true;
+	}
+
 	removeCabinetInteraction() {
 		//this.cabinetInteractionConnection.Disconnect();
 		const cabinetFolder = findElement<Folder>(this.root, "Cabinet");

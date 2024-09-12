@@ -31,6 +31,9 @@ export class AnimatorManager extends MyMaid {
 	playCabinetAnimation(idRoom: number) {
 		this.allCabinets[idRoom].track.Play();
 	}
+	resetCabinetAnimation(idRoom: number) {
+		this.allCabinets[idRoom].track.Stop();
+	}
 
 	prepareMaid(): void {}
 }

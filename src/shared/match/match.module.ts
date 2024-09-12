@@ -5,7 +5,8 @@ import { Stores } from "shared/stores/stores.module";
 import {
 	countSamePositions,
 	generateGoalCombination,
-	compareNewStateWithCurrentState
+	compareNewStateWithCurrentState,
+	generateTip
 } from "shared/services/match-evaluator.module";
 import { printSlotInString } from "shared/services/slot-service.module";
 import { notifyAllPlayers, notifySpecificPlayer } from "shared/services/server-client-comm.module";
@@ -17,6 +18,7 @@ export class Match extends MyMaid {
 	private playerInteractionEvent: BindableEvent;
 	private finishedEvent: BindableEvent;
 	private stores: Stores;
+	private paperTip: string[];
 
 	private connections: RBXScriptConnection[] = [];
 
@@ -26,13 +28,11 @@ export class Match extends MyMaid {
 		this.id = id;
 		this.stores = stores;
 		this.stageGoal = generateGoalCombination();
-		print("Match --- ");
+		this.paperTip = generateTip(this.stageGoal);
 		this.gom = new MatchGom(instance as Folder);
 		this.gom.createTimer();
 
 		this.gom.onCabinetInteract((player: Player) => {
-			print("Linstening to cabinet interactions");
-
 			this.gom.removeCabinetInteraction();
 			//fire to all clients
 			const msg = {
@@ -45,7 +45,6 @@ export class Match extends MyMaid {
 			};
 
 			this.gom.removeCabinetInteraction();
-			//---------continue here, add the paper interaction
 
 			this.gom.onPlayerClosePaperGui(
 				(
@@ -66,7 +65,8 @@ export class Match extends MyMaid {
 					type: "GUI",
 					data: {
 						objectId: "PAPER",
-						userId: player.UserId
+						userId: player.UserId,
+						tip: this.paperTip
 					}
 				};
 
@@ -110,6 +110,7 @@ export class Match extends MyMaid {
 				this.gom.disableStageSlots();
 				this.gom.turnOffPhone();
 				this.gom.playWinSound();
+				this.gom.deactivatePaperInteraction();
 				this.finishedEvent.Fire(MATCH_FINISH.WIN);
 			}
 		});
@@ -117,6 +118,7 @@ export class Match extends MyMaid {
 		this.gom.onMatchStateChange(this.stores, (data) => {
 			if (data.handPlayers.size() === 0) {
 				this.gom.stopTimer();
+				this.gom.deactivatePaperInteraction();
 				this.finishedEvent.Fire(MATCH_FINISH.ABORT);
 				return;
 			}
@@ -205,9 +207,21 @@ export class Match extends MyMaid {
 			this.gom.turnOffPhone();
 			this.gom.disableDeskSlots();
 			this.gom.disableStageSlots();
+			this.gom.deactivatePaperInteraction();
 			//notify it is finished
 			this.finishedEvent.Fire(id, MATCH_FINISH.LOOSE);
 		});
+
+		const msg = {
+			type: "RESET_ANIMATE",
+			data: {
+				roomId: this.gom.getRoomId(),
+				objectId: "CABINET_DOOR"
+			}
+		};
+		notifyAllPlayers(msg);
+		this.gom.activateCabinetInteraction();
+		//this.gom.deactivatePaperInteraction();
 	}
 
 	init() {

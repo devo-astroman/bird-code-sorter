@@ -3,6 +3,7 @@ import {
 	ID_SLOTS,
 	LOCATION,
 	SLOT_VALUE,
+	SLOT_VALUE_STRINGS_INITIALS,
 	SLOTS_DESK_INITIAL_VALUES,
 	STATE_MODIFICACION_DATA
 } from "shared/constants.module";
@@ -81,6 +82,18 @@ export const generateGoalCombination = () => {
 	const goalCombination = shuffleArray(intialValues);
 
 	return goalCombination;
+};
+
+export const generateTip = (goal: SLOT_VALUE[]) => {
+	const randomIndex = math.random(0, goal.size() - 1);
+	const tip = goal.map((sv, i) => {
+		if (i === randomIndex) {
+			return SLOT_VALUE_STRINGS_INITIALS[sv];
+		} else {
+			return "_";
+		}
+	});
+	return tip;
 };
 
 const shuffleArray = (array: number[]) => {
