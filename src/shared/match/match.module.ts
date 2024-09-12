@@ -19,6 +19,7 @@ export class Match extends MyMaid {
 	private finishedEvent: BindableEvent;
 	private stores: Stores;
 	private paperTip: string[];
+	private playerReadingUserId!: number;
 
 	private connections: RBXScriptConnection[] = [];
 
@@ -54,12 +55,14 @@ export class Match extends MyMaid {
 						data: unknown;
 					}
 				) => {
+					this.playerReadingUserId = -123;
 					this.gom.activatePaperInteraction();
 				}
 			);
 
 			this.gom.onPaperInteraction((player: Player) => {
 				//notify the specific player to show the paper UI
+				this.playerReadingUserId = player.UserId;
 				this.gom.deactivatePaperInteraction();
 				const msgPaper = {
 					type: "GUI",
@@ -80,6 +83,9 @@ export class Match extends MyMaid {
 		this.gom.onPlayerRemoved((player: Player) => {
 			const userId = player.UserId;
 			this.stores.removePlayerMatchByUserId(userId);
+			if (userId === this.playerReadingUserId) {
+				this.gom.activatePaperInteraction();
+			}
 		});
 
 		this.gom.onPlayerDied((playerId: number) => {
