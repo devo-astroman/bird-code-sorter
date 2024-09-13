@@ -10,6 +10,7 @@ import {
 } from "shared/services/match-evaluator.module";
 import { printSlotInString } from "shared/services/slot-service.module";
 import { notifyAllPlayers, notifySpecificPlayer } from "shared/services/server-client-comm.module";
+import { getPlayerFromUserId } from "shared/services/player-game-service.module";
 
 export class Match extends MyMaid {
 	private gom: MatchGom;
@@ -91,6 +92,9 @@ export class Match extends MyMaid {
 		this.gom.onPlayerDied((playerId: number) => {
 			const userId = playerId;
 			this.stores.removePlayerMatchByUserId(userId);
+			if (userId === this.playerReadingUserId) {
+				this.gom.activatePaperInteraction();
+			}
 		});
 
 		this.playerInteractionEvent = this.gom.getPlayerInteractionEvent();
@@ -117,6 +121,21 @@ export class Match extends MyMaid {
 				this.gom.turnOffPhone();
 				this.gom.playWinSound();
 				this.gom.deactivatePaperInteraction();
+
+				if (this.playerReadingUserId !== -123) {
+					const msgPaper = {
+						type: "GUI-CLOSE",
+						data: {
+							userId: this.playerReadingUserId
+						}
+					};
+
+					const player = getPlayerFromUserId(this.playerReadingUserId);
+					if (player) {
+						notifySpecificPlayer(player, msgPaper);
+					}
+				}
+
 				this.finishedEvent.Fire(MATCH_FINISH.WIN);
 			}
 		});
@@ -125,6 +144,19 @@ export class Match extends MyMaid {
 			if (data.handPlayers.size() === 0) {
 				this.gom.stopTimer();
 				this.gom.deactivatePaperInteraction();
+				if (this.playerReadingUserId !== -123) {
+					const msgPaper = {
+						type: "GUI-CLOSE",
+						data: {
+							userId: this.playerReadingUserId
+						}
+					};
+
+					const player = getPlayerFromUserId(this.playerReadingUserId);
+					if (player) {
+						notifySpecificPlayer(player, msgPaper);
+					}
+				}
 				this.finishedEvent.Fire(MATCH_FINISH.ABORT);
 				return;
 			}
@@ -214,6 +246,19 @@ export class Match extends MyMaid {
 			this.gom.disableDeskSlots();
 			this.gom.disableStageSlots();
 			this.gom.deactivatePaperInteraction();
+			if (this.playerReadingUserId !== -123) {
+				const msgPaper = {
+					type: "GUI-CLOSE",
+					data: {
+						userId: this.playerReadingUserId
+					}
+				};
+
+				const player = getPlayerFromUserId(this.playerReadingUserId);
+				if (player) {
+					notifySpecificPlayer(player, msgPaper);
+				}
+			}
 			//notify it is finished
 			this.finishedEvent.Fire(id, MATCH_FINISH.LOOSE);
 		});

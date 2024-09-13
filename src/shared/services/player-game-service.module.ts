@@ -88,6 +88,17 @@ export const getHumanoidFromUserId = (userId: number) => {
 	return humanoid;
 };
 
+export const getPlayerFromUserId = (userId: number) => {
+	const pS = game.GetService("Players");
+	const player = pS.GetPlayerByUserId(userId);
+
+	if (!player) {
+		print("Warning there is no player with that user id, ", userId);
+		return undefined;
+	}
+	return player;
+};
+
 export const addPlayerToColliderGroupPrematchCG = (userId: number) => {
 	const character = getCharacterFromUserId(userId);
 	const humanoid = findElement(character, "HumanoidRootPart") as Part;

@@ -28,5 +28,20 @@ export class UIManager extends MyMaid {
 		});
 	}
 
+	hidePaper(player: Player) {
+		//add the second parameter to know what should be written in the paper
+		const pG = findElementShallow<ModuleScript>(player, "PlayerGui");
+		const paperScreenGui = findElementShallow<ScreenGui>(pG, "PaperScreenGui");
+
+		const frame = findElementShallow<Frame>(paperScreenGui, "Frame");
+		const textButton = findElementShallow<TextButton>(frame, "TextButton");
+
+		const imageLabel = findElementShallow<ImageLabel>(frame, "ImageLabel");
+		const textLabel = findElementShallow<TextLabel>(imageLabel, "TextLabel");
+		textLabel.Text = "";
+
+		paperScreenGui.Enabled = false;
+	}
+
 	prepareMaid(): void {}
 }

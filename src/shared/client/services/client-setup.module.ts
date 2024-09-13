@@ -72,8 +72,15 @@ export const setupAnimations = () => {
 				humanoid.WalkSpeed = 16;
 				notifyServer(msg);
 			};
-
 			uiManager.showPaper(pS.LocalPlayer, data.tip.join(), onGuiPaperBackButtonClickCb);
+		} else if (msg.type === "GUI-CLOSE") {
+			const data = msg.data as {
+				userId: number;
+			};
+			const humanoid = getHumanoidFromUserId(data.userId);
+			humanoid.WalkSpeed = 16;
+			const pS = game.GetService("Players");
+			uiManager.hidePaper(pS.LocalPlayer);
 		}
 	});
 };
