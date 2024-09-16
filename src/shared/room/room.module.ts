@@ -3,6 +3,7 @@ import { MATCH_FINISH, ROOM_PHASE } from "shared/constants.module";
 import { Stores } from "shared/stores/stores.module";
 import { RoomGom } from "./room-gom.module";
 import { MyMaid } from "shared/maid/my-maid.module";
+import { saveWinMatchData } from "shared/services/server-store-manager.module";
 
 export class Room extends MyMaid {
 	private stores: Stores;
@@ -27,8 +28,9 @@ export class Room extends MyMaid {
 		});
 
 		this.gom.createMatch(ROOM_PHASE.MATCH, this.stores);
-		this.gom.onMatchFinished((data: MATCH_FINISH) => {
+		this.gom.onMatchFinished((data: MATCH_FINISH, metaData: { time: number; players: number[] }) => {
 			if (data === MATCH_FINISH.WIN) {
+				saveWinMatchData(metaData);
 				//congrats the player
 				this.stores.setRoomStoreState(ROOM_PHASE.WIN);
 			} else if (data === MATCH_FINISH.LOOSE) {
@@ -54,6 +56,7 @@ export class Room extends MyMaid {
 	}
 
 	init(id: number) {
+		this.gom.updateTop10Board();
 		this.id = id;
 		this.gom.setIdValue(id);
 		this.room$.connect((phase) => {

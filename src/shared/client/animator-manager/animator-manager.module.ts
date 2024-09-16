@@ -29,10 +29,10 @@ export class AnimatorManager extends MyMaid {
 	}
 
 	playCabinetAnimation(idRoom: number) {
-		this.allCabinets[idRoom].track.Play();
+		if (this.allCabinets[idRoom]) this.allCabinets[idRoom].track.Play();
 	}
 	resetCabinetAnimation(idRoom: number) {
-		this.allCabinets[idRoom].track.Stop();
+		if (this.allCabinets[idRoom]) this.allCabinets[idRoom].track.Stop();
 	}
 
 	prepareMaid(): void {}

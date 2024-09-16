@@ -39,6 +39,10 @@ export class ClockService extends MyMaid {
 		if (!!this.cleanup) this.cleanup();
 	}
 
+	getCurrentSec() {
+		return this.currentSec;
+	}
+
 	prepareMaid(): void {
 		//this.addListToMaid([this.activePromise as any]);
 	}

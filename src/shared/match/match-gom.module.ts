@@ -100,6 +100,10 @@ export class MatchGom extends MyMaid {
 		if (!this.clock) this.clock = new ClockService();
 	}
 
+	getCurrentTime() {
+		return this.clock.getCurrentSec();
+	}
+
 	startTimer() {
 		this.clock.startTime(MATCH_TIME);
 		this.showTimer();

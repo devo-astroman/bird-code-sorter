@@ -1,6 +1,6 @@
 import { findElement, findElementShallow } from "shared/services/gom-service.module";
 import { notifyServer, onClientReceiveMsg } from "shared/services/server-client-comm.module";
-import { AnimatorManager } from "../animator-manager/animator-manater.module";
+import { AnimatorManager } from "../animator-manager/animator-manager.module";
 import { getHumanoidFromUserId } from "shared/services/player-game-service.module";
 import { UIManager } from "../ui-manager/ui-manager.module";
 

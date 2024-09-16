@@ -17,7 +17,7 @@ export abstract class MyMaid {
 		});
 	}
 
-	maidConnection<T>(signal: RBXScriptSignal, callback: (params: T) => void) {
+	maidConnection<T extends unknown[]>(signal: RBXScriptSignal, callback: (...params: T) => void) {
 		const connection = signal.Connect(callback);
 		this.maid.GiveTask(connection);
 		return connection;

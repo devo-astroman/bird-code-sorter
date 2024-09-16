@@ -20,7 +20,7 @@ export class Match extends MyMaid {
 	private finishedEvent: BindableEvent;
 	private stores: Stores;
 	private paperTip: string[];
-	private playerReadingUserId!: number;
+	private playerReadingUserId = -123;
 
 	private connections: RBXScriptConnection[] = [];
 
@@ -115,6 +115,7 @@ export class Match extends MyMaid {
 
 			if (nCorrects === this.stageGoal.size()) {
 				//fire  Won game
+				const currentTime = this.gom.getCurrentTime();
 				this.gom.stopTimer();
 				this.gom.disableDeskSlots();
 				this.gom.disableStageSlots();
@@ -136,7 +137,9 @@ export class Match extends MyMaid {
 					}
 				}
 
-				this.finishedEvent.Fire(MATCH_FINISH.WIN);
+				const players = this.stores.getPlayersInMatchStoreState();
+
+				this.finishedEvent.Fire(MATCH_FINISH.WIN, { time: currentTime, players });
 			}
 		});
 
